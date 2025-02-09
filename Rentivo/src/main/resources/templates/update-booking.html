@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Booking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #007bff;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, select {
+            padding: 8px;
+            margin-top: 5px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-submit {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        .amount {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav ul {
+                flex-direction: column;
+                margin-top: 20px;
+                gap: 10px;
+            }
+
+            .container {
+                width: 80%;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <a class="logo" href="/">Car Rental</a>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/user/profile">Profile</a></li>
+            <li><a href="/car/list">Cars</a></li>
+            <li><a href="/booking/myBookings">My Bookings</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>Update Booking</h2>
+    <form id="updateBookingForm" method="POST" th:action="@{/booking/update/{id}(id=${carBooking.id})}">
+        <label for="car">Car</label>
+        <select name="car" id="car" required disabled>
+            <option th:value="${carBooking.car.id}" 
+                    th:data-price="${carBooking.car.price}" 
+                    th:text="${carBooking.car.model} + ' - Price: $' + ${carBooking.car.price} + '/day'" 
+                    selected>
+            </option>
+        </select>
+
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" name="startDate" required 
+               th:value="${carBooking.startDate}" min="${T(java.time.LocalDate).now()}"/>
+
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" name="endDate" required 
+               th:value="${carBooking.endDate}" min="${carBooking.startDate.plusDays(1)}"/>
+
+        <div class="amount" id="amount">Total Amount: $<span id="totalAmount" th:text="${carBooking.amountDue}">0</span></div>
+
+        <button type="submit" class="btn-submit">Update Booking</button>
+        <div class="error" id="errorMessage"></div>
+    </form>
+</div>
+
+<footer>
+    <p>&copy; 2025 Car Rental Service. All rights reserved.</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const totalAmountElement = document.getElementById('totalAmount');
+        const errorMessageElement = document.getElementById('errorMessage');
+        const carSelect = document.getElementById('car');
+        const carPrice = parseFloat(carSelect.options[carSelect.selectedIndex].getAttribute('data-price'));
+
+        const today = new Date().toISOString().split('T')[0];
+        startDateInput.setAttribute('min', today);
+
+        startDateInput.addEventListener('change', function () {
+            setMinEndDate();
+            updateAmount();
+        });
+
+        endDateInput.addEventListener('change', updateAmount);
+
+        function setMinEndDate() {
+            if (startDateInput.value) {
+                const startDate = new Date(startDateInput.value);
+                startDate.setDate(startDate.getDate() + 1);
+                endDateInput.setAttribute('min', startDate.toISOString().split('T')[0]);
+            }
+        }
+
+        function updateAmount() {
+            if (startDateInput.value && endDateInput.value) {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(endDateInput.value);
+                const dayDiff = (endDate - startDate) / (1000 * 3600 * 24);
+                totalAmountElement.textContent = (dayDiff * carPrice).toFixed(2);
+            }
+        }
+
+        document.getElementById('updateBookingForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent default submission
+
+            const form = e.target;
+            const carId = carSelect.value;
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+            const pathArray = window.location.pathname.split('/');
+            const bookingId = pathArray[pathArray.length - 1];
+
+            fetch(`/booking/checkCarAvailability?carId=${carId}&startDate=${startDate}&endDate=${endDate}&excludeBookingId=${bookingId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.available) {
+                        form.submit();
+                    } else {
+                        errorMessageElement.textContent = "Car is not available for the selected dates.";
+                    }
+                })
+                .catch(error => {
+                    errorMessageElement.textContent = "An error occurred while checking availability.";
+                });
+        });
+    });
+</script>
+
+</body>
+</html>

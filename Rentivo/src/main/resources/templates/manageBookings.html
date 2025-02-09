@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Bookings - Admin Dashboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 15px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+    nav li {
+      margin: 0 20px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 3px;
+      transition: background-color 0.3s ease;
+    }
+    nav a:hover {
+      background-color: #555;
+    }
+    nav a.active {
+      background-color: #007bff;
+      color: #fff;
+    }
+    main {
+      flex-grow: 1;
+      padding: 30px;
+    }
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .sort-options {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .sort-options select {
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    .manage-bookings {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+    .booking-item {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      width: 80%;
+      margin: 10px 0;
+    }
+    .booking-header {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .booking-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .user-photo, .car-photo {
+      flex: 1;
+      text-align: center;
+    }
+    .booking-info {
+      flex: 2;
+      text-align: center;
+    }
+    .user-photo img, .car-photo img {
+      max-width: 120px;
+      max-height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ddd;
+    }
+    .booking-info p {
+      font-size: 1.1rem;
+      margin: 5px 0;
+    }
+    .finish-payment-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .finish-payment {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background-color 0.3s ease;
+    }
+    .finish-payment:hover {
+      background-color: #218838;
+    }
+    .completed-payment {
+      font-size: 1.2rem;
+      color: green;
+      font-weight: bold;
+      text-align: center;
+    }
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/" th:href="@{/}">Admin Home</a></li>
+        <li><a href="/admin/dashboard" th:href="@{/admin/dashboard}">Dashboard</a></li>
+        <li><a href="/admin/manageUsers" th:href="@{/admin/manageUsers}">Manage Users</a></li>
+        <li><a href="/admin/manageCars" th:href="@{/admin/manageCars}">Manage Cars</a></li>
+        <li><a href="/admin/addCar" th:href="@{/admin/addCar}">Add Car</a></li>
+        <li><a href="/admin/manageBookings" th:href="@{/admin/manageBookings}" class="active">Manage Bookings</a></li>
+        <li><a href="/logout" th:href="@{/logout}">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="manage-bookings">
+      <h1>Manage Bookings</h1>
+      <div class="sort-options">
+          <select name="sortByAmount" id="sortByAmount" onchange="submitSortForm()">
+              <option value="null" th:selected="${sortByAmount == null}">Sort by Amount: Select</option>
+              <option value="asc" th:selected="${sortByAmount == 'asc'}">Sort by Amount: Low to High</option>
+              <option value="desc" th:selected="${sortByAmount == 'desc'}">Sort by Amount: High to Low</option>
+          </select>
+          <select name="sortByStatus" id="sortByStatus" onchange="submitSortForm()">
+              <option value="null" th:selected="${sortByStatus == null}">Sort by Payment Status: Select</option>
+              <option value="pending" th:selected="${sortByStatus == 'pending'}">Sort by Payment Status: Pending</option>
+              <option value="completed" th:selected="${sortByStatus == 'completed'}">Sort by Payment Status: Completed</option>
+          </select>
+      </div>
+      <div th:each="booking : ${bookings}" class="booking-item">
+        <div class="booking-header" th:text="${booking.car.model}"></div>
+        <div class="booking-details">
+          <div class="user-photo">
+            <img th:src="${booking.customer.photo}" alt="User Photo" />
+          </div>
+          <div class="booking-info">
+            <p>Booked by: <span th:text="${booking.customer.username}"></span></p>
+            <p>Phone: <span th:text="${booking.customer.phno}"></span></p>
+            <p>Amount: <span th:text="${booking.amountDue}"></span></p>
+            <p>From: <span th:text="${booking.startDate}"></span></p>
+            <p>To: <span th:text="${booking.endDate}"></span></p>
+          </div>
+          <div class="car-photo">
+            <img th:src="${booking.car.imageUrl}" alt="Car Image" />
+          </div>
+        </div>
+        <div th:switch="${booking.paymentStatus}">
+          <div th:case="'PENDING'">
+            <div class="finish-payment-container">
+              <form th:action="@{/admin/payment/finish/{id}(id=${booking.id})}" method="post">
+                <input type="hidden" name="bookingId" th:value="${booking.id}" />
+                <button type="submit" class="finish-payment">Finish Payment</button>
+              </form>
+            </div>
+          </div>
+          <div th:case="'COMPLETED'">
+            <p class="completed-payment">Completed Payment</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2025 Car Rental Service. All rights reserved.</p>
+  </footer>
+  <script>
+    function submitSortForm() {
+      var sortByAmount = document.getElementById('sortByAmount').value;
+      var sortByStatus = document.getElementById('sortByStatus').value;
+      window.location.href = '/admin/manageBookings?sortByAmount=' + sortByAmount + '&sortByStatus=' + sortByStatus;
+    }
+  </script>
+</body>
+</html>

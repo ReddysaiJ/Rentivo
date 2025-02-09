@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Profile Information */
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info p {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .profile-info strong {
+            font-weight: 700;
+            color: #555;
+        }
+
+        .edit-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .edit-button:hover {
+            background: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+		.modal-content {
+		    background: white;
+		    padding: 25px;
+		    border-radius: 8px;
+		    width: 40%;
+		    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		    max-height: 80vh;
+		    overflow-y: auto;
+		}
+        .close {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .close:hover {
+            color: red;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input, select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .photo-preview {
+            margin-top: 10px;
+        }
+
+        .photo-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            display: none;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 3px;
+        }
+
+        .update-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .update-button:hover {
+            background: #218838;
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .modal-content {
+                width: 80%;
+            }
+        }
+
+        /* Bookings Section */
+        .bookings-container {
+            width: 100%;
+            overflow-x: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        h3 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* Table Styling */
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .bookings-table th, .bookings-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .bookings-table th {
+            background: #007bff;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .bookings-table tbody tr:hover {
+            background: rgba(0, 123, 255, 0.1);
+            transition: 0.3s;
+        }
+
+        /* Payment Status Styling */
+        .status {
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .paid {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .pending {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        /* Responsive Table */
+        @media (max-width: 768px) {
+            .bookings-container {
+                padding: 10px;
+            }
+
+            .bookings-table th, .bookings-table td {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .bookings-table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>User Profile</h2>
+
+    <div class="profile-container">
+        <div class="profile-image">
+            <img id="profile-photo" th:src="${user.photo}" alt="Profile Picture" onerror="this.src='/images/default-profile.png'">
+        </div>
+        <div class="profile-info">
+            <p><strong>Username:</strong> <span id="username" th:text="${user.username}"></span></p>
+            <p><strong>Email:</strong> <span id="email" th:text="${user.email}"></span></p>
+            <p><strong>Phone:</strong> <span id="phno" th:text="${user.phno}"></span></p>
+            <p><strong>Role:</strong> <span id="role" th:text="${user.role}"></span></p>
+            <p><strong>Driving License No:</strong> <span id="drivingLicenseNo" th:text="${user.drivingLicenseNo}"></span></p>
+            <p><strong>Account Status:</strong> <span id="status" th:text="${user.enabled} ? 'Active' : 'Inactive'"></span></p>
+            <button class="edit-button" onclick="openEditModal()">Edit</button>
+        </div>
+    </div>
+
+    <!-- 🔹 Edit User Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Edit User</h2>
+            <form id="editForm" method="POST" action="/user/update" enctype="multipart/form-data">
+                <input type="hidden" id="userId" name="id" th:value="${user.id}" />
+                <label>Name:</label>
+                <input type="text" id="editUsername" name="username" th:value="${user.username}" required />
+
+                <label>Email:</label>
+                <input type="email" id="editEmail" name="email" th:value="${user.email}" required />
+
+                <label>Phone:</label>
+                <input type="text" id="editPhno" name="phno" th:value="${user.phno}" required />
+
+                <label>Role:</label>
+                <select id="editRole" name="role" required>
+                    <option value="USER" th:selected="${user.role == 'USER'}">User</option>
+                </select>
+				
+				<label>Driving License No:</label>
+				<input type="text" id="editDrivingLicenseNo" name="drivingLicenseNo" th:value="${user.drivingLicenseNo}" required />
+
+                <label>Photo:</label>
+                <input type="file" id="editPhoto" name="photoFile" accept="image/*" onchange="previewImage(event)" />
+			
+                <div class="photo-preview">
+                    <img id="photoPreview" th:src="${user.photo}" alt="Photo Preview"
+                        th:style="${user.photo != null ? 'display: block;' : 'display: none;'}"/>
+                </div>
+
+                <button type="submit" class="update-button">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🔹 Recent Bookings -->
+    <h3>Recent Bookings</h3>
+    <div class="bookings-container">
+        <table class="bookings-table">
+            <thead>
+                <tr>
+                    <th>Car</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Amount Due</th>
+                    <th>Payment Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="booking : ${bookings}">
+                    <td th:text="${booking.car.model}"></td>
+                    <td th:text="${booking.startDate}"></td>
+                    <td th:text="${booking.endDate}"></td>
+                    <td th:text="'₹' + ${booking.amountDue}"></td>
+                    <td class="status" th:classappend="${booking.paymentStatus == 'Paid' ? 'paid' : 'pending'}"
+                        th:text="${booking.paymentStatus}">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function openEditModal() {
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const preview = document.getElementById('photoPreview');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+</body>
+</html>
