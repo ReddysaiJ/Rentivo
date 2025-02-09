@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,23 +28,24 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AdminService {
+	
+	@Autowired
+    private UserRepo userRepo;
+	@Autowired
+    private CarRepo carRepo;
+	@Autowired
+	private EmailService emailService;
+	@Autowired
+    private CarBookingRepo bookingRepo;
 
-    private final PasswordEncoder passwordEncoder;
-    private final UserRepo userRepo;
-    private final CarRepo carRepo;
-    private final CarBookingRepo bookingRepo;
-
-    // Get total count of users
     public long getTotalUsers() {
         return userRepo.count();
     }
 
-    // Get total count of cars
     public long getTotalCars() {
         return carRepo.count();
     }
 
-    // Get total count of bookings
     public long getTotalBookings() {
         return bookingRepo.count();
     }
@@ -52,7 +54,6 @@ public class AdminService {
 		return carRepo.countByStatus("AVAILABLE");
 	}
 
-    // Retrieve all users
     public List<User> getAllUsers() {
         return userRepo.findAll();
     }
@@ -80,12 +81,10 @@ public class AdminService {
     }
 
 
-    // Retrieve all cars
     public List<Car> getAllCars() {
         return carRepo.findAll();
     }
 
-    // Delete a user by ID
     public void deleteUser(Long userId) {
         if (userRepo.existsById(userId)) {
             userRepo.deleteById(userId);
@@ -95,12 +94,10 @@ public class AdminService {
         }
     }
 
-    // Add a new car
     public Car addCar(Car car) {
         return carRepo.save(car);
     }
 
-    // Delete a car by ID
     public void deleteCar(Long carId) {
         if (carRepo.existsById(carId)) {
             carRepo.deleteById(carId);
@@ -117,7 +114,7 @@ public class AdminService {
             updatedCar.setType(car.getType());
             updatedCar.setPrice(car.getPrice());
             updatedCar.setStatus(car.getStatus());
-            updatedCar.setImageUrl(car.getImageUrl());  // Set the image URL if updated
+            updatedCar.setImageUrl(car.getImageUrl());
             carRepo.save(updatedCar);
         }
     }
@@ -126,6 +123,7 @@ public class AdminService {
         CarBooking booking = bookingRepo.findById(bookingId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid booking ID: " + bookingId));
         booking.setPaymentStatus("COMPLETED");
+        emailService.sendPaymentFinishedEmail(booking);
         bookingRepo.save(booking);
     }
 

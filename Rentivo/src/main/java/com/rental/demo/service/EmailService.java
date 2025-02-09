@@ -155,6 +155,37 @@ public class EmailService {
             return "Failed to send email: " + e.getMessage();
         }
     }
+    public String sendPaymentFinishedEmail(CarBooking booking) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom("rentivo.team@gmail.com");
+            helper.setTo(booking.getCustomer().getEmail());
+            helper.setSubject("Payment Successful for Your Car Booking");
+
+            String htmlContent = new String(Files.readAllBytes(
+                Paths.get(new ClassPathResource("templates/mail/paymentFinished.html").getURI())),
+                StandardCharsets.UTF_8
+            );
+
+            htmlContent = htmlContent.replace("{{username}}", booking.getCustomer().getUsername())
+                                     .replace("{{carModel}}", booking.getCar().getModel())
+                                     .replace("{{carType}}", booking.getCar().getType())
+                                     .replace("{{startDate}}", booking.getStartDate().toString())
+                                     .replace("{{endDate}}", booking.getEndDate().toString())
+                                     .replace("{{amountPaid}}", String.valueOf(booking.getAmountDue()))
+                                     .replace("{{paymentStatus}}", "PAID");
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+
+            return "Payment finished email sent successfully!";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Failed to send email: " + e.getMessage();
+        }
+    }
 
 
 }
