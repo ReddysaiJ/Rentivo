@@ -1,0 +1,2 @@
+# Rentivo
+Spring Boot Application
