@@ -36,7 +36,7 @@ public class UserService {
 	@Autowired
     private EmailService emailService;
     
-    private static final String IMAGE_UPLOAD_DIR = "src/main/resources/static/images/users/";
+    private static final String IMAGE_UPLOAD_DIR = "src/main/webapp/images/users/";
     
     public String saveImage(MultipartFile image) throws IOException {
         if (image.isEmpty()) {
@@ -81,7 +81,7 @@ public class UserService {
     	    return null;
     	}
 
-    	File directory = new File("src/main/resources/static/images/users/");
+    	File directory = new File("src/main/webapp/images/users/");
     	if (!directory.exists()) {
     	    directory.mkdirs();
     	}
@@ -105,7 +105,7 @@ public class UserService {
         existingUser.setDrivingLicenseNo(user.getDrivingLicenseNo());
 
         if (photo != null && !photo.isEmpty()) {
-            String photoUrl = savePhoto(photo);
+            String photoUrl = saveImage(photo);
             existingUser.setPhoto(photoUrl);
         }
         emailService.sendUpdateEmail(user.getEmail(), user.getUsername());

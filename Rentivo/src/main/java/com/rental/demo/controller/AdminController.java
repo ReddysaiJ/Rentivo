@@ -26,7 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminController {
 
     private final AdminService adminService;
-    private static final String UPLOAD_DIR = "src/main/resources/static/images/cars/";
+    private static final String UPLOAD_DIR = "src/main/webapp/images/cars/";
 
     public AdminController(AdminService adminService) {
         this.adminService = adminService;

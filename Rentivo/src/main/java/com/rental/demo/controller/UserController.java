@@ -71,7 +71,10 @@ public class UserController {
 
         if (result.hasErrors()) {
             redirectAttributes.addFlashAttribute("error", "Validation error");
-            return "redirect:/admin/manageUsers";
+            if ("ADMIN".equals(userDetails.getRole()))
+                return "redirect:/admin/manageUsers";
+            else
+                return "redirect:/user/profile";
         }
 
         userService.updateUser(user, photoFile);
