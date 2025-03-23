@@ -1,4 +1,4 @@
-INSERT IGNORE INTO car (id, image_url, model, price, type, status)
+INSERT IGNORE INTO car (id, image_url, model, price, car_type, status)
 VALUES
 (1, '/images/cars/bmw7series.jpg', 'BMW 7 Series', 5500, 'Luxury sedan', 'AVAILABLE'),
 (2, '/images/cars/mercedes_sclass.jpeg', 'Mercedes-Benz S-Class', 7000, 'Luxury sedan', 'AVAILABLE'),
@@ -28,29 +28,20 @@ VALUES
 
 
 INSERT IGNORE INTO user (id, username, password, email, phno, role, enabled, photo, driving_License_No)
-VALUES
-(1, 'reddysai', '$2b$10$uKdQ9C/iEKVvU42WoXgQwO3RaIZ62iz5FEl4W8.oIEVEP4KIOY5S2', 'reddysai2107@gmail.com', '9876543210', 'ADMIN', true, '/images/users/1738494530646_p1.jpg', 'ABC123456'),
-(2, 'shi', '$2a$10$osyS9CSePti9oUZa7/eQ0uLEFk/dEbXLQbnfZFFZxdEvxVnfjXFoC', 'shi@gmail.com', '9876543211', 'ADMIN', true, '/images/users/1738494530646_p2.jpg', 'DEF654321'),
-(3, 'dev', '$2a$10$rKlp9lXiEyaahREN1FchyuJj1wuu.6RKCrNKk0y7ZcPpZvvvBSQHS', 'dev123@gmail.com', '9876543212', 'USER', true, '/images/users/1738494530646_p3.jpg', 'GHI789123'),
-(4, 'samantha', '$2a$10$TihxhRqFN.JpBgw8JdAon.hYptdU4ghSTx1F6L4a.atCKWLPTT4wK', 'samantha@gmail.com', '9876543213', 'USER', true, '/images/users/1738494530646_p4.jpg', 'JKL456789'),
-(5, 'rashmika', '$2a$10$keZyP22hG/rCOk6R9mXMQOqiQP163dfckKX2/5DkTwotnk2cQG7sO', 'rashmika@gmail.com', '9876543214', 'USER', true, '/images/users/1738494530646_p5.jpg', 'MNO987654'),
-(6, 'prabhas', '$2a$10$9IHweH9Whn.fDyFiPO5.WelgHnRYpvSPm6syglw65jRK.WSbXS03y', 'prabhas@gmail.com', '9876543215', 'USER', true, '/images/users/1738494530646_p6.jpg', 'PQR112233'),
-(7, 'nani', '$2a$10$5aA.Lqm/H4bKImuqryIsWOnEzCw8JOb2n76YumTeSlHYkaWKMqse.', 'nani@gmail.com', '9876543216', 'USER', true, '/images/users/1738494530646_p7.jpg', 'STU223344'),
-(8, 'vijaysethupathi', '$2a$10$bul40.y47lMLJ0WZtemOEuVIANa/Pbb3fM0wAkw5/29FrtOX/IEt6', 'vijaysethupathi@gmail.com', '9876543217', 'USER', true, '/images/users/1738494530646_p8.jpg', 'VWX334455'),
-(9, 'keerthy', '$2a$10$gfuLtVIvxnh84xgWRjfm6uO.ue.1bZIgylTLXUP9sS7dlIAv8tHTO', 'keerthy@gmail.com', '9876543218', 'USER', true, '/images/users/1738494530646_p9.jpg', 'YZA556677'),
-(10, 'karthi', '$2a$10$x51Re8nk1MKYEhJIi8oqiOF/kodYgdWr0YpjpPdxV.O8YnCa.ZWI2', 'karthi@gmail.com', '9876543219', 'USER', true, '/images/users/1738494530646_p10.jpg', 'BCD667788'),
-(11, 'vijay', '$2a$10$bzQYadALw0TzRmfAfgIXYuVKJjF5OYKmsAi/.tg56dQwRFsvcihG.', 'vijay@gmail.com', '9876543220', 'USER', true, '/images/users/1738494530646_p11.jpg', 'EFG778899'),
-(12, 'trisha', '$2a$10$PL4nJ5qIevNWoYX24.kfo.lkWVvSNd02Zlo923uOeYCk1AYiOZZmi', 'trisha@gmail.com', '9876543221', 'USER', true, '/images/users/1738494530646_p12.jpg', 'HIJ889900'),
-(13, 'surya', '$2a$10$65mm5pCzhNChRnRxQMwxLubAB6mTx/Js0dPSODqgXgU6Tjfz5sLwG', 'surya@gmail.com', '9876543222', 'USER', true, '/images/users/1738494530646_p13.jpg', 'JKL990011'),
-(14, 'sai_pallavi', '$2a$10$O/RuXYWboshfi35z3YMdZO2kHvxqY6Z3ywiRcTuCcQxlXLxQ/EGMS', 'saipallavi@gmail.com', '9876543223', 'USER', true, '/images/users/1738494530646_p14.jpg', 'MNO101112'),
-(15, 'anirudh', '$2a$10$qdPodYlidia2c2h7KUdRLOZs7LR5f3CPuxfQSCqXkIxmZmuO1SqWK', 'anirudh@gmail.com', '9876543224', 'USER', true, '/images/users/1738494530646_p15.jpg', 'PQR112233'),
-(16, 'dhanush', '$2b$10$wI6OGMwOUwsFLVZMNynGS2ZG7fPBHYuX9p9yfT8cZia2HgHkz6SHKi', 'dhanush@gmail.com', '9876543225', 'USER', true, '/images/users/1738494530646_p16.jpg', 'STU223344'),
-(17, 'sivakarthikeyan', '$2a$10$8lGFyLpgtXUuc4BfNpxZxusvzI1.XMHz7CG6tZV6N80A8N.S1lmXu', 'sivakarthikeyan@gmail.com', '9876543226', 'USER', true, '/images/users/1738494530646_p17.jpg', 'VWX334455'),
-(18, 'sundeep', '$2a$10$E6EL.lx8D.HyNAe2Y/974uFcwGGanceiYkly.7Yll.SxPFUT5P/We', 'sundeep@gmail.com', '9876543227', 'USER', true, '/images/users/1738494530646_p18.jpg', 'YZA556677'),
-(19, 'nithya', '$2a$10$66gP1In4CAG4e9fx1JQ/tOtwtohGvASK4OBUJ/3kFuLMKxeuQMGNK', 'nithya@gmail.com', '9876543228', 'USER', true, '/images/users/1738494530646_p19.jpg', 'BCD667788'),
-(20, 'malavika', '$2a$10$YrQsMMDAlL8S0JeihLQxS..bquijvSIe2a7rQCZzfnlONHV0Oxq46', 'malavika@gmail.com', '9876543229', 'USER', true, '/images/users/1738494530646_p20.jpg', 'EFG778899'),
-(21, 'ram_pothineni', '$2a$10$ELOhSJlc05cbWp95Bq/.keD1arO8WxF7/CLydILJvKivDsVwJ3a.y', 'ram@gmail.com', '9876543230', 'USER', true, '/images/users/1738494530646_p21.jpg', 'HIJ889900'),
-(22, 'kajal', '$2a$10$hmX/5ZiGaet43myWvCib.eOkc7SeAl52u2ISc121uma8qzBpSAOfG', 'kajal@gmail.com', '9876543231', 'USER', true, '/images/users/1738494530646_p22.jpg', 'JKL990011'),
-(23, 'sreeleela', '$2a$10$dgI4szmiuhIYoByMZezm9.NayCGmhJ2jwY6RpidpZ.lOCIiARt1Fq', 'sreeleela@gmail.com', '9876543232', 'USER', true, '/images/users/1738494530646_p23.jpg', 'MNO112233'),
-(24, 'pooja', '$2a$10$bzpuz7eKqzkZNmQozNrVLORXTN4fQq/h74zPN8hBhqsP.Nv0vwTXe', 'pooja@gmail.com', '9876543233', 'USER', true, '/images/users/1738494530646_p24.jpg', 'PQR334455'),
-(25, 'tamanna', '$2b$10$yVJxL9yKqsEZjxU6/AhS5e', 'tamanna@gmail.com', '9876543234', 'USER', true, '/images/users/1738494530646_p25.jpg', 'STU445566');
+VALUES 
+(1, 'Isha Gupta', '$2a$10$LsyKt4kl93ggFKdAEWfuW.nPjzIn8.Rs9euXLAu36kmG03kA3I8mW', 'isha.gupta@example.com', '9876543210', 'ADMIN', true, '/images/users/1738494530646_p1.jpg', 'DL100200300'),
+(2, 'Meera Sharma', '$2a$10$In3c5QNkI4qmjShBx95hc.E34srJJNfXP3oUkZgmYnsbRowphq0G6', 'meera.sharma@example.com', '8765432109', 'USER', true, '/images/users/1738494530646_p2.jpg', 'DL200300400'),
+(3, 'Ananya Reddy', '$2a$10$PhoMrRw9Wed08W5DlhDUx.SzWuYpRBLltDeg6I0mB1EOcAF0ZQzBG', 'ananya.reddy@example.com', '7654321098', 'USER', true, '/images/users/1738494530646_p3.jpg', 'DL300400500'),
+(4, 'Anupama Parameshwaran', '$2a$10$g72O0G9bMCiU8U6UAAiQ0.F0zkN2M7uHH.3eNRmTo5wbvJwmN4eGS', 'anupama@example.com', '7543210987', 'USER', true, '/images/users/1738494530646_p4.jpg', 'DL400500600'),
+(5, 'Samantha', '$2a$10$yQuLuebORV79SzBhLrmEGuV0qPF.v82LIw3Wh4I5MmYn.uZo2seei', 'samantha@example.com', '7432109876', 'USER', true, '/images/users/1738494530646_p5.jpg', 'DL500600700'),
+(6, 'Rohit Verma', '$2a$10$R.BE.KQkkIx6tau8l3cg8eYhoBb92XZoEv6cDUWAX3cp9yJ/ZvK7e', 'rohit.verma@example.com', '7321098765', 'USER', true, '/images/users/1738494530646_p6.jpg', 'DL600700800'),
+(7, 'Ram Pothineni', '$2a$10$eckn3TIjI1kWt8BA/X0Emuf4648NLx0SYtvSCFynsHesA5jjBINom', 'ram@example.com', '7210987654', 'USER', true, '/images/users/1738494530646_p7.jpg', 'DL700800900'),
+(8, 'Vijay Thalapathi', '$2a$10$00M3SLVx6iOpl1PF5H7Pc.zPACro14Al5m5pL46mw/u5AodDmLT9.', 'vijay@example.com', '7109876543', 'USER', true, '/images/users/1738494530646_p8.jpg', 'DL800900100'),
+(9, 'Manoj Kumar', '$2a$10$w7AmnocpjIgXvfvaW8RQhOiLjlgCBi2wFb.3G5v48oR83pfy4am/u', 'manoj.kumar@example.com', '7098765432', 'USER', true, '/images/users/1738494530646_p9.jpg', 'DL900100200'),
+(10, 'Priyanka Nair', '$2a$10$WjhMKYvHFP6v3Xy.AF2DmeTIBtH2G5v.f9v.RqUG/6cFL79/XQFqa', 'priyanka.nair@example.com', '6987654321', 'USER', true, '/images/users/1738494530646_p10.jpg', 'DL100200300'),
+(11, 'Akash Patel', '$2a$10$OUqKu6JICH.fYesCOPStdOTrvljziG2wRGdSQsaR/jRt0hZ6CzJMO', 'akash.patel@example.com', '6876543210', 'USER', true, '/images/users/1738494530646_p11.jpg', 'DL200300400'),
+(12, 'Sandeep Menon', '$2a$10$nUS3dOzKZkOEQs0GsLgVbuyDgnWqZaGZW5gaZvygKB9Il8yDT3Kxe', 'sandeep.menon@example.com', '6765432109', 'USER', true, '/images/users/1738494530646_p12.jpg', 'DL300400500'),
+(13, 'Rhea Kapoor', '$2a$10$Rxv3o7YvzO9Y9uCtLb4/oOaXuYjtCFOqxGu5hrfX.ceVJVlk3Qa8.', 'rhea.kapoor@example.com', '6654321098', 'USER', true, '/images/users/1738494530646_p13.jpg', 'DL400500600'),
+(14, 'Neha Mishra', '$2a$10$qiczk4OEqD1Fl9SqaGX2S.L9AD.D.TIR226gOMRkJ7oSXf3b09BxS', 'neha.mishra@example.com', '6543210987', 'USER', true, '/images/users/1738494530646_p14.jpg', 'DL500600700'),
+(15, 'Shruti Pandey', '$2a$10$DAuuTUnwVvP3MWyMSgMxxesezG1RbYIgqG8MqDHCrfXQP48RCJ.Rq', 'shruti.pandey@example.com', '6432109876', 'USER', true, '/images/users/1738494530646_p15.jpg', 'DL600700800');
+

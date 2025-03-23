@@ -6,7 +6,6 @@ import com.rental.demo.model.CarBooking;
 import com.rental.demo.model.User;
 import com.rental.demo.repository.CarBookingRepo;
 import com.rental.demo.repository.UserRepo;
-import lombok.AllArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

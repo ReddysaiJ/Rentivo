@@ -1,5 +1,6 @@
 package com.rental.demo.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +18,7 @@ public class Car {
     private Long id;
 
     private String model;
+    @Column(name = "car_type")
     private String type;
     private Double price;
     private String imageUrl; 

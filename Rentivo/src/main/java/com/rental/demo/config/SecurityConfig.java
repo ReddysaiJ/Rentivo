@@ -16,30 +16,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers("/login", "/register", "/user/register", "/css/**", "/js/**", "/images/**").permitAll()
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
-                                .requestMatchers("/api/public/**").permitAll()
-                                .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .failureUrl("/login?error=true")
-                        .defaultSuccessUrl("/", true)
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true")
-                        .permitAll()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                        .invalidSessionUrl("/login?sessionExpired=true")
-                );
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(authorizeRequests ->
+                    authorizeRequests
+                            .requestMatchers("/login", "/register", "/user/register", "/css/**", "/js/**", "/images/**").permitAll()
+                            .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                            .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
+                            .requestMatchers("/api/public/**").permitAll()
+                            .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                    .loginPage("/login")
+                    .failureUrl("/login?error=true")
+                    .defaultSuccessUrl("/", true)
+                    .permitAll()
+            )
+            .logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login?logout=true")
+                    .permitAll()
+            )
+            .sessionManagement(session -> session
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                    .invalidSessionUrl("/login?sessionExpired=true")
+            );
 
         return http.build();
     }
