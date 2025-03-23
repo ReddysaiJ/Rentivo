@@ -3,114 +3,110 @@
 ## By Reddysai Jonnadula
 
 ## Project Overview
-Rentivo is a secure and scalable car rental platform built using Spring Boot. It enables users to browse available cars, book rentals, and process payments while providing administrators with tools to manage the entire system. The platform prioritizes security with BCrypt encryption for passwords, role-based access control, and automated email notifications for critical actions like bookings, cancellations, and updates.
+Rentivo is a secure and scalable car rental platform built using Spring Boot. It enables efficient car bookings, user management, and offline payment verification. The system ensures data security with BCrypt encryption, role-based access control, and email notifications for user transactions.
 
 ## Scope
 ### Purpose of the System
-The purpose of Rentivo is to provide an efficient, secure, and user-friendly car rental management system. It simplifies the car rental process by automating bookings, enhancing security, and ensuring seamless communication through mailing services. The system maintains accurate transaction records and improves the overall rental experience for both customers and administrators.
+The purpose of this system is to facilitate car rentals by allowing users to browse available cars, make bookings, and process payments while providing administrators with tools to manage cars, users, and bookings. The system enhances efficiency by automating rental processes, ensuring secure authentication, and maintaining accurate records of transactions. Additionally, it integrates security mechanisms to protect user data and provides an email notification system for booking confirmations and updates.
 
 ### Included in the Scope
-- **User Management**: Secure registration, authentication, and profile updates.
+- **User Management**: Registration, authentication, and profile updates.
 - **Car Management**: Adding, updating, and deleting car listings.
-- **Booking System**: Creating, modifying, and canceling bookings with real-time availability checks.
-- **Payment Handling**: Confirming offline payments securely.
-- **Admin Dashboard**: Centralized management of users, bookings, and cars.
-- **Security Features**:
-  - **BCrypt Password Hashing**: Protects user credentials.
-  - **Role-based Access Control**: Ensures restricted admin functionalities.
-  - **Email Notifications**: Automated emails for bookings, cancellations, and updates.
+- **Booking System**: Creating, modifying, and canceling bookings.
+- **Payment Handling**: Confirming offline payments.
+- **Admin Dashboard**: Managing users, bookings, and cars.
+- **Security Features**: BCrypt password hashing, Spring Security, and role-based access control.
+- **Email Notifications**: Automated emails for bookings, cancellations, and updates.
 
 ### Outside the Scope
-- **Dynamic Pricing**: The system does not support automated price adjustments based on demand.
-- **Online Payment Integration**: Payments are manually confirmed by admins.
-- **Mobile App**: The platform is web-based and does not include a mobile version.
+- **Dynamic Pricing**: The system does not support automated price changes based on demand.
+- **Online Payment Integration**: Currently, payments are manually confirmed by admins.
+- **Mobile App**: The platform is web-based without a dedicated mobile application.
 
 ## Features
 - **User Authentication**: Secure login, registration, and password management using BCrypt.
 - **Car Management**: Admins can add, update, and remove cars with real-time availability.
 - **Booking & Payments**: Users can book cars, and offline payments are confirmed by the admin.
-- **Role-based Access Control**: Prevents unauthorized actions by distinguishing admin and user privileges.
-- **Email Notifications**: Automatic emails for bookings, cancellations, and updates to enhance user communication.
-- **Admin Dashboard**: A comprehensive panel for managing users, bookings, and cars efficiently.
+- **Role-based Access Control**: Ensures secure admin and user functionalities.
+- **Email Notifications**: Automated emails for bookings, cancellations, and updates.
+- **Admin Dashboard**: Centralized control for managing users, bookings, and cars.
 
 ## Technology Stack
 - **Backend**: Java, Spring Boot, Hibernate (JPA)
 - **Frontend**: HTML, CSS, Thymeleaf
 - **Database**: MySQL
 - **Security**: BCrypt for password hashing, Spring Security
-- **Mailing**: Spring Boot Mail for notifications
+- **Mailing Service**: Spring Boot Mail for automated emails
 - **Development & Deployment**: Maven, Git, IntelliJ IDEA/Eclipse
 
 ## Directory Structure
 ```
-reddysaij-rentivo/
+└── reddysaij-rentivo/
+    ├── README.md
     └── Rentivo/
+        ├── mvnw
+        ├── mvnw.cmd
         ├── pom.xml
+        ├── .gitattributes
+        ├── .gitignore
         ├── src/
-        │   ├── main/java/com/rental/demo/
-        │   │   ├── RentivoApplication.java
-        │   │   ├── config/ (Security & Web Configurations)
-        │   │   ├── controller/ (Admin, Car, Booking, User Controllers)
-        │   │   ├── model/ (Car, Booking, User Models)
-        │   │   ├── repository/ (JPA Repositories)
-        │   │   ├── service/ (Business Logic)
+        │   ├── main/
+        │   │   ├── java/com/rental/demo/
+        │   │   │   ├── RentivoApplication.java
+        │   │   │   ├── config/
+        │   │   │   │   ├── SecurityConfig.java
+        │   │   │   │   └── WebConfig.java
+        │   │   │   ├── controller/
+        │   │   │   │   ├── AdminController.java
+        │   │   │   │   ├── CarBookingController.java
+        │   │   │   │   ├── CarController.java
+        │   │   │   │   ├── HomeController.java
+        │   │   │   │   └── UserController.java
+        │   │   │   ├── exception/
+        │   │   │   │   ├── UserAlreadyExistsException.java
+        │   │   │   │   └── UserNotFoundException.java
+        │   │   │   ├── model/
+        │   │   │   │   ├── Car.java
+        │   │   │   │   ├── CarBooking.java
+        │   │   │   │   ├── User.java
+        │   │   │   │   └── UserDetailsImpl.java
+        │   │   │   ├── repository/
+        │   │   │   │   ├── CarBookingRepo.java
+        │   │   │   │   ├── CarRepo.java
+        │   │   │   │   └── UserRepo.java
+        │   │   │   ├── service/
+        │   │   │   │   ├── AdminService.java
+        │   │   │   │   ├── CarBookingService.java
+        │   │   │   │   ├── CarService.java
+        │   │   │   │   ├── EmailService.java
+        │   │   │   │   ├── UserDetailsServiceImpl.java
+        │   │   │   │   └── UserService.java
         │   │   ├── resources/
         │   │   │   ├── application.properties
-        │   │   │   ├── templates/ (HTML Views)
-        │   │   │   ├── static/css/ (Styling)
-        │   └── test/java/com/rental/demo/ (Test Cases)
+        │   │   │   ├── data.sql
+        │   │   │   ├── static/css/style.css
+        │   │   │   ├── templates/
+        │   │   │   │   ├── addCar.html
+        │   │   │   │   ├── adminDashboard.html
+        │   │   │   │   ├── manageBookings.html
+        │   │   │   │   ├── manageCars.html
+        │   │   │   │   ├── manageUsers.html
+        │   │   │   │   ├── my-bookings.html
+        │   │   │   │   ├── registerUser.html
+        │   │   │   │   ├── userHome.html
+        │   │   │   │   └── mail/
+        │   │   │   │       ├── booking.html
+        │   │   │   │       ├── bookingCancellation.html
+        │   │   │   │       ├── paymentFinished.html
+        │   │   │   │       ├── updated.html
+        │   │   │   │       └── welcome.html
+        │   │   └── webapp/images/
+        │   │       ├── cars/
+        │   │       └── users/
+        │   └── test/java/com/rental/demo/
+        │       └── RentivoApplicationTests.java
+        └── .mvn/wrapper/maven-wrapper.properties
 ```
-
-## API Endpoints
-### Authentication & User Management
-- `GET /login` - User login page
-- `GET /user/register` - User registration page
-- `POST /user/register` - Register a new user
-- `POST /user/update` - Update user profile
-- `GET /user/profile` - View user profile
-
-### Admin Operations
-- `GET /admin/dashboard` - Admin dashboard
-- `GET /admin/manageUsers` - Manage users
-- `POST /admin/user/delete/{id}` - Delete a user
-- `GET /admin/manageCars` - Manage cars
-- `POST /admin/addCar` - Add a new car
-- `POST /admin/car/update/{id}` - Update car details
-- `POST /admin/car/delete/{id}` - Delete a car
-- `GET /admin/manageBookings` - Manage bookings
-- `POST /admin/payment/finish/{id}` - Confirm offline payment
-
-### Booking Operations
-- `GET /booking/create` - Booking page
-- `POST /booking/create` - Create a new booking
-- `GET /booking/myBookings` - View user bookings
-- `POST /booking/cancel/{id}` - Cancel a booking
-- `GET /booking/update/{id}` - Update booking details
-- `POST /booking/update/{id}` - Submit booking updates
-- `GET /booking/view/{id}` - View a specific booking
-- `GET /booking/checkCarAvailability` - Check car availability
-
-### Car Operations
-- `GET /car/list` - List available cars
-
-## Why These Features Matter
-### Authentication & Security
-**Why:** Secure authentication with BCrypt prevents unauthorized access and strengthens password security.
-
-### Car Management
-**Why:** Keeping car listings updated ensures accurate availability tracking and prevents double bookings.
-
-### Booking & Payments
-**Why:** A structured booking system allows users to easily manage their rentals while admins handle payment confirmations securely.
-
-### Role-based Access Control
-**Why:** Preventing unauthorized actions enhances security and system integrity.
-
-### Email Notifications
-**Why:** Automatic emails improve user engagement and provide real-time updates on bookings and cancellations.
-
-### Admin Dashboard
-**Why:** Centralized management reduces administrative workload and streamlines operations.
 
 ## Installation & Setup
 ### Prerequisites
@@ -121,11 +117,11 @@ reddysaij-rentivo/
 ### Steps to Run
 1. Clone the repository:
    ```sh
-   git clone https://github.com/reddysaij/rentivo.git
+   git clone https://github.com/ReddysaiJ/Rentivo.git
    ```
 2. Navigate to the project folder:
    ```sh
-   cd reddysaij-rentivo/Rentivo
+   cd rentivo
    ```
 3. Configure the database in `application.properties`:
    ```properties
@@ -140,6 +136,7 @@ reddysaij-rentivo/
 5. Open `http://localhost:8080` in a browser.
 
 ## Future Enhancements
-- **Online Payments**: Integrate payment gateways for seamless transactions.
-- **Mobile App**: Develop an Android/iOS version for better accessibility.
+- **Online Payments**: Integrate payment gateways.
+- **Mobile App**: Develop an Android/iOS version.
 - **AI-based Recommendations**: Suggest cars based on user preferences.
+
