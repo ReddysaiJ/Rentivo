@@ -112,4 +112,16 @@ public class UserService {
 
     public List<CarBooking> findRecentBookingsByUser(Long userId) {
         return bookingRepo.findTop5ByCustomerIdOrderByStartDateDesc(userId);
-    }}
+    }
+
+    public User findByEmail(String email) {
+        return userRepo.findByEmail(email).orElse(null);
+    }
+
+    public void updatePassword(String email, String newPassword) {
+        userRepo.findByEmail(email).ifPresent(user -> {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepo.save(user);
+        });
+    }
+}

@@ -49,19 +49,24 @@ public class CarBookingController {
     }
 
     @PostMapping("/create")
-    public String createBooking(@ModelAttribute("carBooking") CarBooking carBooking, @RequestParam("car.id") Long carId, @RequestParam("startDate") String startDate,
-                                @RequestParam("endDate") String endDate, @RequestParam("amountDue") double amountDue,
-                                @AuthenticationPrincipal UserDetailsImpl userDetails, Model model) {
+    public String createBooking(@ModelAttribute("carBooking") CarBooking carBooking, @RequestParam("car.id") Long carId,
+                                @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
+                                @RequestParam("amountDue") double amountDue,
+                                @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                Model model) {
         Car car = carService.getCarById(carId);
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        boolean available = bookingService.isCarAvailable(carId, start, end, null);
+        if (!available)
+            return "redirect:/booking/create?error=CarNotAvailable&carId=" + carId + "&startDate=" + startDate + "&endDate=" + endDate;
+
         carBooking.setCar(car);
         User user = userDetails.getUser();
         carBooking.setCustomer(user);
-
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
         carBooking.setStartDate(start);
         carBooking.setEndDate(end);
-
         carBooking.setAmountDue(amountDue);
 
         bookingService.createBooking(carBooking);

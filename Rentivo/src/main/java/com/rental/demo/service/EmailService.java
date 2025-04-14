@@ -187,5 +187,18 @@ public class EmailService {
         }
     }
 
+    public void sendOTPEmail(String toEmail, String subject, String body) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom("rentivo.team@gmail.com");
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(body, true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
