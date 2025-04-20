@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +7,17 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+            background-color: #f4f4f4;
         }
-        .container {
+        .email-container {
             width: 100%;
             max-width: 600px;
-            background-color: white;
             margin: 20px auto;
+            background-color: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
         .header {
@@ -32,17 +32,12 @@
         }
         .content {
             padding: 20px;
-            text-align: center;
             color: #333;
-        }
-        .content h2 {
-            color: #007BFF;
-            margin-bottom: 10px;
         }
         .content p {
             font-size: 16px;
             line-height: 1.6;
-            margin-bottom: 20px;
+            margin: 0 0 15px;
         }
         .cta-button {
             display: inline-block;
@@ -53,17 +48,18 @@
             border-radius: 5px;
             font-size: 16px;
             font-weight: bold;
-            transition: background 0.3s ease;
+            text-align: center;
+            margin: 10px 0;
         }
         .cta-button:hover {
             background-color: #0056b3;
         }
         .footer {
-            background-color: #222;
-            color: white;
             text-align: center;
             padding: 15px;
+            color: #777;
             font-size: 14px;
+            border-top: 1px solid #ddd;
         }
         .footer a {
             color: #00BFFF;
@@ -72,22 +68,20 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Welcome to Rentivo!</h1>
-        </div>
-
-        <div class="content">
-            <h2>Hi, <span style="color: #007BFF;">{{USERNAME}}</span>! 🎉</h2>
-            <p>Thank you for joining <strong>Rentivo</strong>, your trusted rental platform. Whether you're looking to rent a car or manage your bookings, we've got you covered!</p>
-            <p>Your journey begins now. Click below to explore your account and get started.</p>
-            <a href="{{APP_URL}}" class="cta-button">Go to Rentivo</a>
-        </div>
-
-        <div class="footer">
-            <p>Need help? Contact our support team at <a href="mailto:support@rentivo.com">support@rentivo.com</a></p>
-            <p>&copy; 2025 Rentivo. All rights reserved.</p>
-        </div>
+<div class="email-container">
+    <div class="header">
+        <h1>Welcome to Rentivo!</h1>
     </div>
+    <div class="content">
+        <p>Hi, <strong>{{username}}</strong>! 🎉</p>
+        <p>Thank you for joining <strong>Rentivo</strong>, your trusted rental platform. Whether you're looking to rent a car or manage your bookings, we've got you covered!</p>
+        <p>Your journey begins now. Click below to explore your account and get started.</p>
+        <a href="{{APP_URL}}" class="cta-button">Go to Rentivo</a>
+    </div>
+    <div class="footer">
+        <p>Need help? Contact our support team at <a href="mailto:rentivo.team@gmail.com">rentivo.team@gmail.com</a></p>
+        <p>© 2025 Rentivo. All rights reserved.</p>
+    </div>
+</div>
 </body>
 </html>

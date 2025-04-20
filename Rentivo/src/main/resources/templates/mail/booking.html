@@ -16,65 +16,92 @@
             max-width: 600px;
             margin: 20px auto;
             background-color: #ffffff;
-            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-        h1 {
-            color: #333;
-            font-size: 24px;
+        .header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
             text-align: center;
-            margin-bottom: 20px;
         }
-        p {
-            color: #555;
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px;
+            color: #333;
+        }
+        .content p {
             font-size: 16px;
             line-height: 1.6;
+            margin: 0 0 15px;
         }
         .card {
             background-color: #f9f9f9;
             border-radius: 8px;
-            margin-top: 20px;
+            margin: 20px 0;
             padding: 15px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         .card-header h2 {
             margin: 0;
             font-size: 20px;
             color: #333;
         }
-        .card-body {
-            margin-top: 10px;
-        }
         .card-body table {
             width: 100%;
             margin-top: 10px;
+            border-collapse: collapse;
         }
         .card-body th, .card-body td {
             padding: 8px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            font-size: 16px;
+        }
+        .card-body th {
+            color: #555;
+            font-weight: normal;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .cta-button:hover {
+            background-color: #0056b3;
         }
         .footer {
             text-align: center;
-            margin-top: 30px;
+            padding: 15px;
             color: #777;
             font-size: 14px;
+            border-top: 1px solid #ddd;
+        }
+        .footer a {
+            color: #00BFFF;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div class="email-container">
+<div class="email-container">
+    <div class="header">
         <h1>Car Booking Confirmation</h1>
+    </div>
+    <div class="content">
         <p>Dear <strong>{{username}}</strong>,</p>
         <p>Thank you for booking a car with us. Below are the details of your booking:</p>
-
-        <!-- Car Details Card -->
         <div class="card">
             <div class="card-header">
                 <h2>{{carModel}} - {{carType}}</h2>
@@ -96,12 +123,12 @@
                 </table>
             </div>
         </div>
-
         <p>Your booking is confirmed. If you need to cancel or update your booking, please check the terms and conditions in your account.</p>
-        
-        <div class="footer">
-            <p>&copy; 2025 Car Rental Service. All rights reserved.</p>
-        </div>
     </div>
+    <div class="footer">
+        <p>Need help? Contact our support team at <a href="mailto:rentivo.team@gmail.com">rentivo.team@gmail.com</a></p>
+        <p>© 2025 Rentivo. All rights reserved.</p>
+    </div>
+</div>
 </body>
 </html>

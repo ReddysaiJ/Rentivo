@@ -30,7 +30,7 @@ public class EmailService {
                     Paths.get(new ClassPathResource("templates/mail/welcome.html").getURI())),
                     StandardCharsets.UTF_8
             );
-            htmlContent = htmlContent.replace("{{USERNAME}}", username);
+            htmlContent = htmlContent.replace("{{username}}", username);
             helper.setText(htmlContent, true);
             mailSender.send(message);
             return "Email sent successfully!";
