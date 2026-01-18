@@ -1,8 +1,6 @@
 package com.rental.demo.controller;
 
-import com.rental.demo.model.Car;
-import com.rental.demo.model.CarBooking;
-import com.rental.demo.model.User;
+import com.rental.demo.model.*;
 import com.rental.demo.service.AdminService;
 
 import jakarta.validation.Valid;
@@ -26,7 +24,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminController {
 
     private final AdminService adminService;
-    private static final String UPLOAD_DIR = "src/main/webapp/images/cars/";
 
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
@@ -51,10 +48,8 @@ public class AdminController {
     @GetMapping("/manageUsers")
     public String manageUsers(@RequestParam(value = "editId", required = false) Long editId, Model model) {
         if (editId != null) {
-            User userToEdit = adminService.getUserById(editId);
+            CreateUserCmd userToEdit = adminService.getUserById(editId);
             model.addAttribute("userToEdit", userToEdit);
-        } else {
-            model.addAttribute("userToEdit", new User());
         }
         model.addAttribute("users", adminService.getAllUsers());
         return "manageUsers";
@@ -76,23 +71,14 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("error", "Invalid car data.");
             return "redirect:/admin/manageCars";
         }
-
-        String imageUrl = null;
-        if (!image.isEmpty()) {
-            try {
-                String fileName = System.currentTimeMillis() + "-" + image.getOriginalFilename();
-                Path path = Paths.get(UPLOAD_DIR + fileName);
-                Files.copy(image.getInputStream(), path);
-                imageUrl = "/images/cars/" + fileName;
-                car.setImageUrl(imageUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-                redirectAttributes.addFlashAttribute("error", "Image upload failed.");
-                return "redirect:/admin/manageCars";
-            }
+        try {
+            adminService.addCar(car, image);
+        } catch (IOException e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Image upload failed.");
+            return "redirect:/admin/manageCars";
         }
 
-        adminService.addCar(car);
         redirectAttributes.addFlashAttribute("message", "Car added successfully.");
         return "redirect:/admin/manageCars";
     }
@@ -113,29 +99,13 @@ public class AdminController {
             return "redirect:/admin/manageCars";
         }
 
-        if (image != null && !image.isEmpty()) {
-            String fileName = StringUtils.cleanPath(image.getOriginalFilename());
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-
-            try {
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
-                Path filePath = uploadPath.resolve(fileName);
-                image.transferTo(filePath);
-
-                car.setImageUrl("/images/cars/" + fileName);
-            } catch (IOException e) {
-                redirectAttributes.addFlashAttribute("error", "Image upload failed: " + e.getMessage());
-                return "redirect:/admin/manageCars";
-            }
-        } else {
-            Car existingCar = adminService.getCarById(id);
-            car.setImageUrl(existingCar.getImageUrl());
+        try {
+            adminService.updateCar(id, car, image);
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "Image upload failed: " + e.getMessage());
+            return "redirect:/admin/manageCars";
         }
 
-        adminService.updateCar(id, car);
         redirectAttributes.addFlashAttribute("message", "Car updated successfully.");
         return "redirect:/admin/manageCars";
     }
@@ -182,10 +152,5 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("error", "Error updating payment: " + e.getMessage());
         }
         return "redirect:/admin/manageBookings";
-    }
-
-    @GetMapping("/logout")
-    public String logout() {
-        return "redirect:/";
     }
 }

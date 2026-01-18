@@ -1,27 +1,41 @@
 package com.rental.demo.service;
 
+import com.rental.demo.model.Car;
 import com.rental.demo.model.CarBooking;
+import com.rental.demo.model.CarBookingDTO;
+import com.rental.demo.model.User;
 import com.rental.demo.repository.CarBookingRepo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class CarBookingService {
 
-    @Autowired
     private CarBookingRepo bookingRepo;
-
-    @Autowired
+    private CarService carService;
+    private EntityMapper entityMapper;
     private EmailService emailService;
 
-    public CarBooking createBooking(CarBooking booking) {
-        CarBooking savedBooking = bookingRepo.save(booking);
+    public void createBooking(Long carId, LocalDate start, LocalDate end, User user) {
+        Car car = carService.getCarById(carId);
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, end);
+        CarBooking booking = new CarBooking();
+        booking.setCar(car);
+        booking.setCustomer(user);
+        booking.setStartDate(start);
+        booking.setEndDate(end);
+        booking.setAmountDue(daysBetween * car.getPrice());
+        bookingRepo.save(booking);
         emailService.sendNewBookingEmail(booking);
-        return savedBooking;
     }
 
     public boolean cancelBooking(Long bookingId) {
@@ -35,13 +49,22 @@ public class CarBookingService {
     }
 
 
-    public CarBooking getBooking(Long id) {
-        return bookingRepo.findById(id).orElseThrow(() -> new RuntimeException("Booking not found"));
+    public CarBookingDTO getBooking(Long id) {
+        return bookingRepo.findById(id)
+                .map(entityMapper::toCarBookingDTO)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
     }
 
-    public void updateBooking(CarBooking booking) {
-    	emailService.sendBookingUpdateEmail(booking);
-        bookingRepo.save(booking);
+    public void updateBooking(CarBookingDTO carBookingDTO, LocalDate startDate, LocalDate endDate) {
+        CarBooking existingBooking = bookingRepo.findById(carBookingDTO.id())
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        existingBooking.setStartDate(startDate);
+        existingBooking.setEndDate(endDate);
+        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+        double amountDue = daysBetween * existingBooking.getCar().getPrice();
+        existingBooking.setAmountDue(amountDue);
+    	emailService.sendBookingUpdateEmail(existingBooking);
+        bookingRepo.save(existingBooking);
     }
 
     public boolean isCarAvailable(Long carId, LocalDate startDate, LocalDate endDate, Long excludeBookingId) {
@@ -54,11 +77,29 @@ public class CarBookingService {
         return overlappingBookings.isEmpty();
     }
 
-    public List<CarBooking> getBookingsByCustomerUsername(String username) {
-        return bookingRepo.findByCustomerUsername(username);
+    public List<CarBookingDTO> getBookingsByCustomerUsername(String username) {
+        List<CarBookingDTO> bookings = new ArrayList<>();
+        var carBookings = bookingRepo.findByCustomerUsername(username);
+        for(CarBooking carBooking : carBookings) {
+            LocalDateTime bookingStart = carBooking.getStartDate().atStartOfDay();
+            Boolean update = !bookingStart.isBefore(LocalDateTime.now().plusHours(3));
+
+            bookings.add(new CarBookingDTO(
+                    carBooking.getId(),
+                    carBooking.getCustomer(),
+                    carBooking.getCar(),
+                    carBooking.getStartDate(),
+                    carBooking.getEndDate(),
+                    carBooking.getAmountDue(),
+                    update,
+                    carBooking.getPaymentStatus()
+            ));
+        }
+        return bookings;
     }
 
     public Iterable<CarBooking> getAllBookings() {
         return bookingRepo.findAll();
     }
+
 }

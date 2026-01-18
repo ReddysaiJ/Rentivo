@@ -1,10 +1,12 @@
 package com.rental.demo.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
 @Entity
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -15,8 +17,8 @@ public class User {
     private String password;
     private String email;
     private String phno;
-    private String role;
-    private boolean enabled;
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.ROLE_USER;
 
     private String photo;
     private String drivingLicenseNo;

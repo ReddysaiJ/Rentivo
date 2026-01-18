@@ -1,47 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div layout:fragment="content">
+    <!-- Custom CSS for minimal overrides -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: #f4f4f4;
-            color: #333;
-            padding: 20px;
-        }
-
-        h2 {
-            color: #007bff;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .profile-container {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
         .profile-image {
             width: 150px;
             height: 150px;
-            border-radius: 50%;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
@@ -52,306 +26,143 @@
             object-fit: cover;
         }
 
-        /* Profile Information */
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-info p {
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
-
-        .profile-info strong {
-            font-weight: 700;
-            color: #555;
-        }
-
-        .edit-button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-
-        .edit-button:hover {
-            background: #0056b3;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-		.modal-content {
-		    background: white;
-		    padding: 25px;
-		    border-radius: 8px;
-		    width: 40%;
-		    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-		    max-height: 80vh;
-		    overflow-y: auto;
-		}
-        .close {
-            float: right;
-            font-size: 20px;
-            cursor: pointer;
-            color: #333;
-        }
-
-        .close:hover {
-            color: red;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        input, select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        input:focus, select:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-
-        .photo-preview {
-            margin-top: 10px;
-        }
-
         .photo-preview img {
             max-width: 100px;
             max-height: 100px;
             display: none;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            padding: 3px;
+            border: 1px solid #ccc;
         }
 
-        .update-button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-top: 15px;
-            transition: background 0.3s ease;
-        }
-
-        .update-button:hover {
-            background: #218838;
-        }
-
-        @media (max-width: 768px) {
-            .profile-container {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            
-            .modal-content {
-                width: 80%;
-            }
-        }
-
-        /* Bookings Section */
-        .bookings-container {
-            width: 100%;
-            overflow-x: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        h3 {
-            color: #007bff;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        /* Table Styling */
-        .bookings-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
-        }
-
-        .bookings-table th, .bookings-table td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .bookings-table th {
-            background: #007bff;
-            color: white;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .bookings-table tbody tr:hover {
-            background: rgba(0, 123, 255, 0.1);
-            transition: 0.3s;
-        }
-
-        /* Payment Status Styling */
         .status {
             font-weight: bold;
             padding: 8px 12px;
-            border-radius: 5px;
-        }
-
-        .paid {
-            color: #28a745;
-            background: rgba(40, 167, 69, 0.1);
-        }
-
-        .pending {
-            color: #dc3545;
-            background: rgba(220, 53, 69, 0.1);
-        }
-
-        /* Responsive Table */
-        @media (max-width: 768px) {
-            .bookings-container {
-                padding: 10px;
-            }
-
-            .bookings-table th, .bookings-table td {
-                padding: 8px;
-                font-size: 14px;
-            }
-
-            .bookings-table {
-                font-size: 14px;
-            }
         }
     </style>
-</head>
-<body>
-    <h2>User Profile</h2>
 
-    <div class="profile-container">
-        <div class="profile-image">
-            <img id="profile-photo" th:src="${user.photo}" alt="Profile Picture" onerror="this.src='/images/default-profile.png'">
-        </div>
-        <div class="profile-info">
-            <p><strong>Username:</strong> <span id="username" th:text="${user.username}"></span></p>
-            <p><strong>Email:</strong> <span id="email" th:text="${user.email}"></span></p>
-            <p><strong>Phone:</strong> <span id="phno" th:text="${user.phno}"></span></p>
-            <p><strong>Role:</strong> <span id="role" th:text="${user.role}"></span></p>
-            <p><strong>Driving License No:</strong> <span id="drivingLicenseNo" th:text="${user.drivingLicenseNo}"></span></p>
-            <p><strong>Account Status:</strong> <span id="status" th:text="${user.enabled} ? 'Active' : 'Inactive'"></span></p>
-            <button class="edit-button" onclick="openEditModal()">Edit</button>
+    <!-- Profile Header -->
+    <h2 class="text-center text-primary mb-4">User Profile</h2>
+
+    <!-- Profile Container -->
+    <div class="card mx-auto mb-4" style="max-width: 900px;">
+        <div class="card-body d-flex flex-column flex-md-row align-items-center align-items-md-start gap-4">
+            <div class="profile-image rounded-circle">
+                <img id="profile-photo" th:src="${user.photo}" alt="Profile Picture"
+                     onerror="this.src='/images/users/default-profile.jpg'" class="rounded-circle">
+            </div>
+            <div class="flex-grow-1">
+                <p class="mb-2"><strong>Username:</strong> <span th:text="${user.username} ?: 'N/A'"></span></p>
+                <p class="mb-2"><strong>Email:</strong> <span th:text="${user.email} ?: 'N/A'"></span></p>
+                <p class="mb-2"><strong>Phone:</strong> <span th:text="${user.phno} ?: 'N/A'"></span></p>
+                <p class="mb-2"><strong>Role:</strong>
+                    <span th:text="${(user.role.name() == 'ROLE_USER') ? 'USER' : (user.role.name() == 'ROLE_ADMIN' ? 'ADMIN' : 'N/A')}"></span></p>
+                <p class="mb-2"><strong>Driving License:</strong> <span th:text="${user.drivingLicenseNo} ?: 'N/A'"></span></p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+            </div>
         </div>
     </div>
 
-    <!-- 🔹 Edit User Modal -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeEditModal()">&times;</span>
-            <h2>Edit User</h2>
-            <form id="editForm" method="POST" action="/user/update" enctype="multipart/form-data">
-                <input type="hidden" id="userId" name="id" th:value="${user.id}" />
-                <label>Name:</label>
-                <input type="text" id="editUsername" name="username" th:value="${user.username}" required />
-
-                <label>Email:</label>
-                <input type="email" id="editEmail" name="email" th:value="${user.email}" required />
-
-                <label>Phone:</label>
-                <input type="text" id="editPhno" name="phno" th:value="${user.phno}" required />
-
-                <label>Role:</label>
-                <select id="editRole" name="role" required>
-                    <option value="USER" th:selected="${user.role == 'USER'}">User</option>
-                </select>
-				
-				<label>Driving License No:</label>
-				<input type="text" id="editDrivingLicenseNo" name="drivingLicenseNo" th:value="${user.drivingLicenseNo}" required />
-
-                <label>Photo:</label>
-                <input type="file" id="editPhoto" name="photoFile" accept="image/*" onchange="previewImage(event)" />
-			
-                <div class="photo-preview">
-                    <img id="photoPreview" th:src="${user.photo}" alt="Photo Preview"
-                        th:style="${user.photo != null ? 'display: block;' : 'display: none;'}"/>
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div class="modal-body">
+                    <form method="POST" action="/user/update" enctype="multipart/form-data">
+                        <input type="hidden" name="id" th:value="${user.id}" />
 
-                <button type="submit" class="update-button">Update</button>
-            </form>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username:</label>
+                            <input type="text" class="form-control" id="username" name="username" th:value="${user.username}" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phno" class="form-label">Phone:</label>
+                            <input type="text" class="form-control" id="phno" name="phno" th:value="${user.phno}" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role:</label>
+                            <select class="form-select" id="role" name="role">
+                                <option value="ROLE_USER" th:selected="${user.role.name() == 'ROLE_USER'}">USER</option>
+
+                                <option sec:authorize="hasRole('ADMIN')"
+                                        value="ROLE_ADMIN" th:selected="${user.role.name() == 'ROLE_ADMIN'}">ADMIN</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="drivingLicenseNo" class="form-label">Driving License No:</label>
+                            <input type="text" class="form-control" id="drivingLicenseNo" name="drivingLicenseNo" th:value="${user.drivingLicenseNo}" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="photoFile" class="form-label">Photo:</label>
+                            <input type="file" class="form-control" id="photoFile" name="photoFile" accept="image/*" onchange="previewImage(event)" />
+                            <div class="photo-preview mt-2">
+                                <img id="photoPreview" th:src="${user.photo}" alt="Photo Preview"
+                                     th:style="${user.photo != null ? 'display:block;' : 'display:none;'}" />
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 🔹 Recent Bookings -->
-    <h3>Recent Bookings</h3>
-    <div class="bookings-container">
-        <table class="bookings-table">
-            <thead>
-                <tr>
-                    <th>Car</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Amount Due</th>
-                    <th>Payment Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="booking : ${bookings}">
-                    <td th:text="${booking.car.model}"></td>
-                    <td th:text="${booking.startDate}"></td>
-                    <td th:text="${booking.endDate}"></td>
-                    <td th:text="'₹' + ${booking.amountDue}"></td>
-                    <td class="status" th:classappend="${booking.paymentStatus == 'Paid' ? 'paid' : 'pending'}"
-                        th:text="${booking.paymentStatus}">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Recent Bookings -->
+    <div class="card mx-auto" style="max-width: 1000px;">
+        <div class="card-body">
+            <h4 class="text-center text-primary mb-3">Recent Bookings</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center">
+                    <thead class="table-primary">
+                    <tr>
+                        <th scope="col">Car</th>
+                        <th scope="col">Start Date</th>
+                        <th scope="col">End Date</th>
+                        <th scope="col">Amount Due</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="booking : ${bookings}">
+                        <td th:text="${booking.car.model}"></td>
+                        <td th:text="${booking.startDate}"></td>
+                        <td th:text="${booking.endDate}"></td>
+                        <td th:text="'₹' + ${booking.amountDue}"></td>
+                        <td class="status"
+                            th:classappend="${booking.paymentStatus == 'Paid' ? 'text-success bg-success bg-opacity-10' : 'text-danger bg-danger bg-opacity-10'}"
+                            th:text="${booking.paymentStatus}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
+    <!-- JavaScript for Image Preview -->
     <script>
-        function openEditModal() {
-            document.getElementById('editModal').style.display = 'flex';
-        }
-
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
         function previewImage(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const preview = document.getElementById('photoPreview');
-                preview.src = reader.result;
+            const preview = document.getElementById('photoPreview');
+            const file = event.target.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
                 preview.style.display = 'block';
-            };
-            reader.readAsDataURL(event.target.files[0]);
+            }
         }
     </script>
+</div>
 </body>
 </html>

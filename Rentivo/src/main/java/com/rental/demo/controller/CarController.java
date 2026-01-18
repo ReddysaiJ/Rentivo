@@ -1,5 +1,7 @@
 package com.rental.demo.controller;
 
+import com.rental.demo.model.CarDTO;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,16 +16,16 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/car")
+@AllArgsConstructor
 public class CarController {
 
-    @Autowired
     private CarService carService;
 
     @GetMapping("/list")
     public String listCars(@RequestParam(required = false) String startDate,
                            @RequestParam(required = false) String endDate,
                            Model model) {
-        List<Car> cars = new ArrayList<>();
+        List<CarDTO> cars = new ArrayList<>();
 
         if (startDate != null && endDate != null) {
             LocalDate start = LocalDate.parse(startDate);

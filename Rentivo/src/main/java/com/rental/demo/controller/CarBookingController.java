@@ -1,39 +1,34 @@
 package com.rental.demo.controller;
 
-import com.rental.demo.model.Car;
-import com.rental.demo.model.CarBooking;
-import com.rental.demo.model.User;
-import com.rental.demo.model.UserDetailsImpl;
+import com.rental.demo.model.*;
 import com.rental.demo.service.CarBookingService;
 import com.rental.demo.service.CarService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@AllArgsConstructor
 @RequestMapping("/booking")
 public class CarBookingController {
 
-    @Autowired
     private CarBookingService bookingService;
-
-    @Autowired
     private CarService carService;
 
     @GetMapping("/create")
     public String showBookingForm(@RequestParam("carId") Long carId, @RequestParam("startDate") String startDate, 
     							@RequestParam("endDate") String endDate, Model model) {
-        Car car = carService.getCarById(carId);
-        model.addAttribute("car", car);
+        CarDTO carDto = carService.getCarDtoById(carId);
+        model.addAttribute("car", carDto);
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
 
@@ -41,20 +36,18 @@ public class CarBookingController {
         LocalDate end = LocalDate.parse(endDate);
         long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(start, end);
 
-        double amountDue = daysBetween * car.getPrice();
+        double amountDue = daysBetween * carDto.price();
         model.addAttribute("amountDue", amountDue);
-
-        model.addAttribute("carBooking", new CarBooking());
+        model.addAttribute("carBooking", new CarBookingDTO(null, null, null, null, null, null, false, ""));
         return "create-booking";
     }
 
     @PostMapping("/create")
-    public String createBooking(@ModelAttribute("carBooking") CarBooking carBooking, @RequestParam("car.id") Long carId,
+    public String createBooking(@Valid @ModelAttribute("carBooking") RequestCarBooking requestCarBooking, @RequestParam("car.id") Long carId,
                                 @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
                                 @RequestParam("amountDue") double amountDue,
                                 @AuthenticationPrincipal UserDetailsImpl userDetails,
                                 Model model) {
-        Car car = carService.getCarById(carId);
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end = LocalDate.parse(endDate);
 
@@ -62,32 +55,14 @@ public class CarBookingController {
         if (!available)
             return "redirect:/booking/create?error=CarNotAvailable&carId=" + carId + "&startDate=" + startDate + "&endDate=" + endDate;
 
-        carBooking.setCar(car);
-        User user = userDetails.getUser();
-        carBooking.setCustomer(user);
-        carBooking.setStartDate(start);
-        carBooking.setEndDate(end);
-        carBooking.setAmountDue(amountDue);
-
-        bookingService.createBooking(carBooking);
+        bookingService.createBooking(carId, start, end, userDetails.getUser());
         return "redirect:/booking/myBookings";
     }
 
     @GetMapping("/myBookings")
     public String viewBookings(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         String username = userDetails.getUsername();
-        List<CarBooking> bookings = bookingService.getBookingsByCustomerUsername(username);
-
-        LocalDateTime now = LocalDateTime.now();
-
-        for (CarBooking booking : bookings) {
-            LocalDateTime bookingStart = booking.getStartDate().atStartOfDay();
-            if (bookingStart.isBefore(now.plusHours(3))) {
-                booking.setCancelableOrUpdatable(false);
-            } else {
-                booking.setCancelableOrUpdatable(true);
-            }
-        }
+        List<CarBookingDTO> bookings = bookingService.getBookingsByCustomerUsername(username);
 
         model.addAttribute("bookings", bookings);
         return "my-bookings";
@@ -112,36 +87,28 @@ public class CarBookingController {
 
     @GetMapping("/update/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model) {
-        CarBooking booking = bookingService.getBooking(id);
+        CarBookingDTO booking = bookingService.getBooking(id);
+        System.out.println(booking);
         model.addAttribute("carBooking", booking);
+        model.addAttribute("today", LocalDate.now());
         return "update-booking";
     }
 
     @PostMapping("/update/{id}")
     public String updateBooking(@PathVariable Long id, 
-                                @ModelAttribute("carBooking") CarBooking carBooking) {
-        CarBooking existingBooking = bookingService.getBooking(id);
+                                @ModelAttribute("carBooking") CarBookingDTO carBookingDto) {
+        LocalDate startDate = carBookingDto.startDate();
+        LocalDate endDate = carBookingDto.endDate();
+        CarBookingDTO booking = bookingService.getBooking(id);
 
-        LocalDate startDate = carBooking.getStartDate();
-        LocalDate endDate = carBooking.getEndDate();
-
-        if (endDate.isBefore(startDate)) {
+        if (endDate.isBefore(startDate))
             return "redirect:/booking/update/" + id + "?error=InvalidDate";
-        }
 
-        boolean available = bookingService.isCarAvailable(existingBooking.getCar().getId(), startDate, endDate, existingBooking.getId());
-        if (!available) {
+        boolean available = bookingService.isCarAvailable(booking.car().getId(), startDate, endDate, booking.id());
+        if (!available)
             return "redirect:/booking/update/" + id + "?error=CarNotAvailable";
-        }
 
-        existingBooking.setStartDate(startDate);
-        existingBooking.setEndDate(endDate);
-        
-        long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
-        double amountDue = daysBetween * existingBooking.getCar().getPrice();
-        existingBooking.setAmountDue(amountDue);
-
-        bookingService.updateBooking(existingBooking);
+        bookingService.updateBooking(carBookingDto, startDate, endDate);
         return "redirect:/booking/myBookings";
     }
 

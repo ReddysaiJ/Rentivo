@@ -1,318 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bookings - Car Rental</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-	<style>
-	    * {
-	        margin: 0;
-	        padding: 0;
-	        box-sizing: border-box;
-	        font-family: 'Poppins', sans-serif;
-	    }
-
-	    body {
-	        background: #f4f4f4;
-	        color: #333;
-	        display: flex;
-	        flex-direction: column;
-	        min-height: 100vh;
-	    }
-
-	    header {
-	        background: #007bff;
-	        padding: 15px 0;
-	        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-	    }
-
-	    nav {
-	        max-width: 960px;
-	        margin: 0 auto;
-	        display: flex;
-	        justify-content: space-between;
-	        align-items: center;
-	        padding: 0 20px;
-	    }
-
-	    .logo {
-	        font-weight: 700;
-	        color: white;
-	        text-decoration: none;
-	        font-size: 1.2rem;
-	    }
-
-	    nav ul {
-	        list-style: none;
-	        display: flex;
-	        gap: 20px;
-	    }
-
-	    nav ul li a {
-	        text-decoration: none;
-	        color: white;
-	        padding: 10px 15px;
-	        border-radius: 5px;
-	        transition: background 0.3s ease, color 0.3s ease;
-	    }
-
-	    nav ul li a:hover {
-	        background: rgba(255, 255, 255, 0.2);
-	        color: #fff;
-	    }
-
-	    main {
-	        flex: 1;
-	        padding: 40px;
-	        width: 95%;
-	        max-width: 1400px;
-	        margin: 0 auto;
-	        display: flex;
-	        flex-direction: column;
-	        align-items: center;
-	    }
-
-	    h1 {
-	        font-size: 2.5rem;
-	        color: #007bff;
-	        margin-bottom: 30px;
-	        text-align: center;
-	    }
-
-	    p {
-	        font-size: 1.2rem;
-	        color: #666;
-	        margin-bottom: 30px;
-	        line-height: 1.6;
-	    }
-
-	    .booking-container {
-	        width: 98%;
-	        max-width: 1600px;
-	        margin-bottom: 50px;
-	        padding: 30px;
-	        background-color: #fff;
-	        border-radius: 8px;
-	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-	        display: flex;
-	        flex-direction: column;
-	        align-items: center;
-	    }
-
-	    table {
-	        width: 100%;
-	        border-collapse: collapse;
-	        table-layout: auto;
-	        margin: 0 auto;
-	        display: flex;
-	        flex-direction: column;
-	    }
-
-	    thead, tbody {
-	        width: 100%;
-	    }
-
-	    tr {
-	        display: flex;
-	        width: 100%;
-	    }
-
-	    th, td {
-	        padding: 14px;
-	        text-align: center;
-	        border: 1px solid #ddd;
-	        white-space: nowrap;
-	        overflow: hidden;
-	        text-overflow: ellipsis;
-	        flex: 1;
-	        justify-content: center;
-	        align-items: center;
-	    }
-
-	    th {
-	        background-color: #f2f2f2;
-	        color: #333;
-	    }
-
-	    td {
-	        background-color: #f9f9f9;
-	    }
-
-	    button {
-	        padding: 8px 12px;
-	        background-color: #4CAF50;
-	        color: white;
-	        border: none;
-	        border-radius: 4px;
-	        cursor: pointer;
-	        margin: 5px;
-	    }
-
-	    button:hover {
-	        background-color: #45a049;
-	    }
-
-	    .actions {
-	        display: flex;
-	        justify-content: center;
-	        gap: 10px;
-	    }
-
-	    .actions form {
-	        display: inline-block;
-	    }
-
-	    footer {
-	        background: #333;
-	        color: white;
-	        text-align: center;
-	        padding: 20px 0;
-	        margin-top: 40px;
-	    }
-
-	    @media (max-width: 768px) {
-	        .booking-container {
-	            width: 95%;
-	            flex-direction: column;
-	            align-items: center;
-	        }
-
-	        table {
-	            table-layout: auto;
-	        }
-
-	        th, td {
-	            font-size: 0.9rem;
-	            padding: 8px;
-	        }
-
-	        th:nth-child(1), td:nth-child(1) {
-	            width: 30%;
-	        }
-	        th:nth-child(2), td:nth-child(2),
-	        th:nth-child(3), td:nth-child(3) {
-	            width: 35%;
-	        }
-	        th:nth-child(4), td:nth-child(4) {
-	            width: 20%;
-	        }
-	        th:nth-child(5), td:nth-child(5) {
-	            width: 30%;
-	        }
-	        th:nth-child(6), td:nth-child(6) {
-	            width: 20%;
-	        }
-	    }
-		.modal {
-		    position: fixed; /* Key: Fixed positioning */
-		    top: 50%; /* Position in the vertical center */
-		    left: 50%; /* Position in the horizontal center */
-		    transform: translate(-50%, -50%); /* Center precisely using transform */
-		    background-color: white;
-		    padding: 20px;
-		    border-radius: 8px;
-		    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-		    z-index: 1000; /* Ensure it's on top of other content */
-		}
-	</style>
+    <title>My Bookings</title>
 </head>
+
 <body>
+<div layout:fragment="content">
+    <!-- Custom CSS for minimal overrides -->
+    <style>
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
 
-<header>
-    <nav>
-        <a class="logo" href="/">Car Rental</a>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/user/profile">Profile</a></li>
-            <li><a href="/car/list">Cars</a></li>
-            <li><a href="/booking/myBookings">My Bookings</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
-    </nav>
-</header>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <h2 class="text-center text-primary mb-4">My Bookings</h2>
 
-<main>
-    <section class="booking-container">
-        <h1>My Bookings</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Car</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Amount Due</th>
-                    <th>Payment Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="booking : ${bookings}">
-                    <td th:text="${booking.car.model}"></td>
-                    <td th:text="${booking.startDate}"></td>
-                    <td th:text="${booking.endDate}"></td>
-                    <td th:text="${booking.amountDue}"></td>
-                    <td th:text="${booking.paymentStatus}"></td>
-                    <td>
-                        <div th:if="${booking.cancelableOrUpdatable}">
-                            <div class="actions">
-                                <form th:action="@{/booking/cancel/{id}(id=${booking.id})}" method="POST" id="cancel-form-${booking.id}">
-                                    <button type="button" class="cancel-booking" data-id="${booking.id}" onclick="showCancellationModal(this)">Cancel</button>
-                                </form>
-                                <a th:href="@{/booking/update/{id}(id=${booking.id})}">
-                                    <button>Update</button>
-                                </a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-</main>
-
-<div id="cancellationModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Cancellation Charges</h2>
-        </div>
-        <div class="modal-body">
-            <p><strong>Please note:</strong> A cancellation fee of ₹1000 will be charged for canceling your booking.</p>
-            <p>Are you sure you want to cancel?</p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="confirmCancellation()">Yes, Cancel</button>
-            <button onclick="closeModal()">No, Keep Booking</button>
+        <!-- Bookings Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover text-center">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col">Car</th>
+                            <th scope="col">Start Date</th>
+                            <th scope="col">End Date</th>
+                            <th scope="col">Amount Due</th>
+                            <th scope="col">Payment Status</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="booking : ${bookings}">
+                            <td th:text="${booking.car.model}"></td>
+                            <td th:text="${booking.startDate}"></td>
+                            <td th:text="${booking.endDate}"></td>
+                            <td th:text="'₹' + ${booking.amountDue}"></td>
+                            <td th:text="${booking.paymentStatus}"></td>
+                            <td>
+                                <div th:if="${booking.cancelableOrUpdatable}">
+                                    <div class="actions">
+                                        <form th:action="@{/booking/cancel/{id}(id=${booking.id})}" method="POST"
+                                              th:id="'cancel-form-' + ${booking.id}">
+                                            <button type="button" class="btn btn-danger btn-sm cancel-booking"
+                                                    th:attr="data-id=${booking.id}"
+                                                    data-bs-toggle="modal" data-bs-target="#cancellationModal">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                        <a th:href="@{/booking/update/{id}(id=${booking.id})}" class="btn btn-primary btn-sm">Update</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Cancellation Modal -->
+    <div class="modal fade" id="cancellationModal" tabindex="-1" aria-labelledby="cancellationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancellationModalLabel">Cancellation Charges</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Please note:</strong> A cancellation fee of ₹1000 will be charged for canceling your booking.</p>
+                    <p>Are you sure you want to cancel?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep Booking</button>
+                    <button type="button" class="btn btn-danger btn-confirm-cancel" onclick="confirmCancellation()">Yes, Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Cancellation Modal -->
+    <script th:inline="javascript">
+        function confirmCancellation() {
+            const bookingId = document.querySelector('.btn-confirm-cancel').dataset.bookingId;
+            const form = document.getElementById(`cancel-form-${bookingId}`);
+            form.submit();
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const cancelButtons = document.querySelectorAll('.cancel-booking');
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    document.querySelector('.btn-confirm-cancel').dataset.bookingId = this.dataset.id;
+                });
+            });
+        });
+    </script>
 </div>
-
-
-<footer>
-    <p>&copy; 2025 Car Rental Service. All rights reserved.</p>
-</footer>
-
-<script th:inline="javascript">
-    function showCancellationModal(button) {
-        const bookingId = button.dataset.id;
-        document.getElementById('cancellationModal').style.display = 'block';
-        document.getElementById('cancellationModal').dataset.bookingId = bookingId;
-    }
-
-    function closeModal() {
-        document.getElementById('cancellationModal').style.display = 'none';
-    }
-
-    function confirmCancellation() {
-        const bookingId = document.getElementById('cancellationModal').dataset.bookingId;
-        const form = document.getElementById(`cancel-form-${bookingId}`);
-        form.submit();
-        closeModal();
-    }
-</script>
-
 </body>
 </html>

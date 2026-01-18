@@ -11,10 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
+@ToString
 public class CarBooking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,8 +36,7 @@ public class CarBooking {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    private double amountDue;
-    private boolean cancelableOrUpdatable;
+    private Double amountDue;
 
     @Column(nullable = false)
     private String paymentStatus = "PENDING";

@@ -1,204 +1,115 @@
 package com.rental.demo.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
 import com.rental.demo.model.CarBooking;
-import jakarta.mail.internet.MimeMessage;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-	
-	@Autowired
-    private JavaMailSender mailSender;
-    
+
+    private final AmqpTemplate rabbitTemplate;
+
+    private static final String EXCHANGE = "rentivo.email.exchange";
+    private static final String ROUTING_KEY_PREFIX = "rentivo.email.";
+
+    public EmailService(AmqpTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
+
     public String sendWelcomeEmail(String to, String username) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setFrom("rentivo.team@gmail.com");
-            helper.setTo(to);
-            helper.setSubject("Welcome to Rentivo, " + username + "!");
-
-            String htmlContent = new String(Files.readAllBytes(
-                    Paths.get(new ClassPathResource("templates/mail/welcome.html").getURI())),
-                    StandardCharsets.UTF_8
-            );
-            htmlContent = htmlContent.replace("{{username}}", username);
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-            return "Email sent successfully!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to send email: " + e.getMessage();
-        }
+        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY_PREFIX + "welcome",
+                new WelcomeEmailEvent(to, username));
+        return "Enqueued welcome email";
     }
+
     public String sendUpdateEmail(String to, String username) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setFrom("rentivo.team@gmail.com");
-            helper.setTo(to);
-            helper.setSubject("Your Rentivo Profile Has Been Updated");
-
-            String htmlContent = new String(Files.readAllBytes(
-                    Paths.get(new ClassPathResource("templates/mail/updated.html").getURI())),
-                    StandardCharsets.UTF_8
-            );
-
-            htmlContent = htmlContent.replace("{{username}}", username);
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-            return "Update email sent successfully!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to send email: " + e.getMessage();
-        }
+        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY_PREFIX + "update",
+                new UpdateEmailEvent(to, username));
+        return "Enqueued update email";
     }
-    
+
     public String sendNewBookingEmail(CarBooking booking) {
-		try {
-			MimeMessage message = mailSender.createMimeMessage();
-			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-			
-			helper.setFrom("rentivo.team@gmail.com");
-			helper.setTo(booking.getCustomer().getEmail());
-			helper.setSubject("Your Rentivo Car Booking Confirmation");
-			
-			String htmlContent = new String(Files.readAllBytes(
-				Paths.get(new ClassPathResource("templates/mail/booking.html").getURI())),
-				StandardCharsets.UTF_8);
-			
-			htmlContent = htmlContent.replace("{{username}}", booking.getCustomer().getUsername())
-									.replace("{{carModel}}", booking.getCar().getModel())
-									.replace("{{carType}}", booking.getCar().getType())
-									.replace("{{startDate}}", booking.getStartDate().toString())
-									.replace("{{endDate}}", booking.getEndDate().toString())
-									.replace("{{amountDue}}", String.valueOf(booking.getAmountDue()))
-									.replace("{{paymentStatus}}", booking.getPaymentStatus());
-			
-			helper.setText(htmlContent, true);
-			mailSender.send(message);
-			return "Booking confirmation email sent successfully!";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Failed to send email: " + e.getMessage();
-		}
+        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY_PREFIX + "newBooking",
+                new BookingEmailEvent(booking));
+        return "Enqueued booking confirmation email";
     }
-    
+
     public String sendBookingUpdateEmail(CarBooking booking) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setFrom("rentivo.team@gmail.com");
-            helper.setTo(booking.getCustomer().getEmail());
-            helper.setSubject("Your Rentivo Car Booking Has Been Updated");
-
-            String htmlContent = new String(Files.readAllBytes(
-                Paths.get(new ClassPathResource("templates/mail/bookingUpdate.html").getURI())),
-                StandardCharsets.UTF_8
-            );
-
-            htmlContent = htmlContent.replace("{{username}}", booking.getCustomer().getUsername())
-                                     .replace("{{carModel}}", booking.getCar().getModel())
-                                     .replace("{{carType}}", booking.getCar().getType())
-                                     .replace("{{startDate}}", booking.getStartDate().toString())
-                                     .replace("{{endDate}}", booking.getEndDate().toString())
-                                     .replace("{{amountDue}}", String.valueOf(booking.getAmountDue()))
-                                     .replace("{{paymentStatus}}", booking.getPaymentStatus());
-
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-            return "Booking update email sent successfully!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to send email: " + e.getMessage();
-        }
+        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY_PREFIX + "bookingUpdate",
+                new BookingUpdateEmailEvent(booking));
+        return "Enqueued booking update email";
     }
-    
+
     public String sendBookingCancellationEmail(CarBooking booking) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setFrom("rentivo.team@gmail.com");
-            helper.setTo(booking.getCustomer().getEmail());
-            helper.setSubject("Your Rentivo Car Booking Has Been Canceled");
-
-            String htmlContent = new String(Files.readAllBytes(
-                Paths.get(new ClassPathResource("templates/mail/bookingCancellation.html").getURI())),
-                StandardCharsets.UTF_8
-            );
-
-            htmlContent = htmlContent.replace("{{username}}", booking.getCustomer().getUsername())
-                                     .replace("{{carModel}}", booking.getCar().getModel())
-                                     .replace("{{carType}}", booking.getCar().getType())
-                                     .replace("{{startDate}}", booking.getStartDate().toString())
-                                     .replace("{{endDate}}", booking.getEndDate().toString())
-                                     .replace("{{amountDue}}", String.valueOf(1000))
-                                     .replace("{{paymentStatus}}", booking.getPaymentStatus());
-
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-
-            return "Booking cancellation email sent successfully!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to send email: " + e.getMessage();
-        }
+        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY_PREFIX + "cancellation",
+                new BookingCancellationEmailEvent(booking));
+        return "Enqueued booking cancellation email";
     }
+
     public String sendPaymentFinishedEmail(CarBooking booking) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setFrom("rentivo.team@gmail.com");
-            helper.setTo(booking.getCustomer().getEmail());
-            helper.setSubject("Payment Successful for Your Car Booking");
-
-            String htmlContent = new String(Files.readAllBytes(
-                Paths.get(new ClassPathResource("templates/mail/paymentFinished.html").getURI())),
-                StandardCharsets.UTF_8
-            );
-
-            htmlContent = htmlContent.replace("{{username}}", booking.getCustomer().getUsername())
-                                     .replace("{{carModel}}", booking.getCar().getModel())
-                                     .replace("{{carType}}", booking.getCar().getType())
-                                     .replace("{{startDate}}", booking.getStartDate().toString())
-                                     .replace("{{endDate}}", booking.getEndDate().toString())
-                                     .replace("{{amountPaid}}", String.valueOf(booking.getAmountDue()))
-                                     .replace("{{paymentStatus}}", "PAID");
-
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-
-            return "Payment finished email sent successfully!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to send email: " + e.getMessage();
-        }
+        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY_PREFIX + "paymentFinished",
+                new PaymentFinishedEmailEvent(booking));
+        return "Enqueued payment finished email";
     }
 
     public void sendOTPEmail(String toEmail, String subject, String body) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom("rentivo.team@gmail.com");
-            helper.setTo(toEmail);
-            helper.setSubject(subject);
-            helper.setText(body, true);
-            mailSender.send(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY_PREFIX + "otp",
+                new OtpEmailEvent(toEmail, subject, body));
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class WelcomeEmailEvent {
+        private String to;
+        private String username;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateEmailEvent {
+        private String to;
+        private String username;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BookingEmailEvent {
+        private CarBooking booking;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BookingUpdateEmailEvent {
+        private CarBooking booking;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BookingCancellationEmailEvent {
+        private CarBooking booking;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PaymentFinishedEmailEvent {
+        private CarBooking booking;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OtpEmailEvent {
+        private String toEmail;
+        private String subject;
+        private String body;
+    }
 }

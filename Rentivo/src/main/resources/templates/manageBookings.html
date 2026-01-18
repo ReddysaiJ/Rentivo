@@ -1,219 +1,383 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Bookings - Admin Dashboard</title>
+  <title>Manage Bookings</title>
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      background-color: #f4f4f4;
+    :root {
+        --primary: #1E3A8A;
+        --secondary: #14B8A6;
+        --background: #F9FAFB;
+        --text: #1F2937;
+        --accent: #F43F5E;
+        --white: #FFFFFF;
     }
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 15px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-    }
-    nav li {
-      margin: 0 20px;
-    }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      padding: 10px 15px;
-      border-radius: 3px;
-      transition: background-color 0.3s ease;
-    }
-    nav a:hover {
-      background-color: #555;
-    }
-    nav a.active {
-      background-color: #007bff;
-      color: #fff;
-    }
+
     main {
-      flex-grow: 1;
-      padding: 30px;
+        flex-grow: 1;
+        padding: 30px 20px;
+        background-color: var(--background);
     }
+
     h1 {
-      margin-bottom: 20px;
-      text-align: center;
+        margin-bottom: 20px;
+        text-align: center;
+        color: var(--text);
     }
+
     .sort-options {
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
+        margin-bottom: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        background-color: var(--white);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
     }
+
+    .sort-options label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 10px;
+    }
+
     .sort-options select {
-      padding: 8px;
-      font-size: 1rem;
-      border-radius: 3px;
-      border: 1px solid #ccc;
-      background-color: #fff;
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #D1D5DB;
+        background-color: var(--white);
+        width: 100%;
+        max-width: 300px;
+        transition: border-color 0.3s ease;
     }
+
+    .sort-options select:focus {
+        border-color: var(--primary);
+        outline: none;
+    }
+
+    .sort-order {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .sort-order input[type="radio"] {
+        display: none;
+    }
+
+    .sort-order label {
+        padding: 8px 16px;
+        border: 2px solid #D1D5DB;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text);
+        transition: all 0.3s ease;
+        background-color: var(--white);
+    }
+
+    .sort-order input[type="radio"]:checked + label {
+        background-color: var(--primary);
+        color: var(--white);
+        border-color: var(--primary);
+    }
+
+    .sort-order label:hover {
+        background-color: var(--secondary);
+        color: var(--white);
+        border-color: var(--secondary);
+    }
+
     .manage-bookings {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      align-items: center;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
     }
+
     .booking-item {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      width: 80%;
-      margin: 10px 0;
+        background-color: var(--white);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        margin: 10px 0;
+        transition: box-shadow 0.3s ease;
     }
+
+    .booking-item:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
     .booking-header {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      font-weight: bold;
-      text-align: center;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        font-weight: bold;
+        text-align: center;
+        color: var(--text);
     }
+
     .booking-details {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
     }
+
     .user-photo, .car-photo {
-      flex: 1;
-      text-align: center;
+        flex: 1;
+        text-align: center;
     }
+
     .booking-info {
-      flex: 2;
-      text-align: center;
+        flex: 2;
+        text-align: center;
     }
+
     .user-photo img, .car-photo img {
-      max-width: 120px;
-      max-height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #ddd;
+        max-width: 120px;
+        max-height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #D1D5DB;
     }
+
     .booking-info p {
-      font-size: 1.1rem;
-      margin: 5px 0;
+        font-size: 1.1rem;
+        margin: 8px 0;
+        color: var(--text);
     }
+
     .finish-payment-container {
-      display: flex;
-      justify-content: center;
-      width: 100%;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 15px;
     }
+
     .finish-payment {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      border-radius: 3px;
-      transition: background-color 0.3s ease;
+        background-color: var(--primary);
+        color: var(--white);
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
     }
+
     .finish-payment:hover {
-      background-color: #218838;
+        background-color: #1E40AF;
     }
+
     .completed-payment {
-      font-size: 1.2rem;
-      color: green;
-      font-weight: bold;
-      text-align: center;
+        font-size: 1.2rem;
+        color: var(--secondary);
+        font-weight: bold;
+        text-align: center;
+        margin-top: 15px;
     }
-    footer {
-      background-color: #333;
-      color: #fff;
-      text-align: center;
-      padding: 15px 0;
+
+    @media screen and (max-width: 768px) {
+        .booking-details {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-photo, .car-photo, .booking-info {
+            flex: none;
+            width: 100%;
+        }
+
+        .sort-options {
+            padding: 15px;
+        }
+    }
+
+    @media screen and (max-width: 576px) {
+        main {
+            padding: 20px 10px;
+        }
+
+        .booking-item {
+            padding: 15px;
+        }
+
+        .user-photo img, .car-photo img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        .booking-header {
+            font-size: 1.1rem;
+        }
+
+        .booking-info p {
+            font-size: 1rem;
+        }
+
+        .sort-options select {
+            max-width: 250px;
+        }
+
+        .sort-order label {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
     }
   </style>
 </head>
-<body>
-  <header>
-    <nav>
-      <ul>
-        <li><a href="/" th:href="@{/}">Admin Home</a></li>
-        <li><a href="/admin/dashboard" th:href="@{/admin/dashboard}">Dashboard</a></li>
-        <li><a href="/admin/manageUsers" th:href="@{/admin/manageUsers}">Manage Users</a></li>
-        <li><a href="/admin/manageCars" th:href="@{/admin/manageCars}">Manage Cars</a></li>
-        <li><a href="/admin/addCar" th:href="@{/admin/addCar}">Add Car</a></li>
-        <li><a href="/admin/manageBookings" th:href="@{/admin/manageBookings}" class="active">Manage Bookings</a></li>
-        <li><a href="/logout" th:href="@{/logout}">Logout</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main>
-    <section class="manage-bookings">
-      <h1>Manage Bookings</h1>
-      <div class="sort-options">
-          <select name="sortByAmount" id="sortByAmount" onchange="submitSortForm()">
-              <option value="null" th:selected="${sortByAmount == null}">Sort by Amount: Select</option>
-              <option value="asc" th:selected="${sortByAmount == 'asc'}">Sort by Amount: Low to High</option>
-              <option value="desc" th:selected="${sortByAmount == 'desc'}">Sort by Amount: High to Low</option>
-          </select>
-          <select name="sortByStatus" id="sortByStatus" onchange="submitSortForm()">
-              <option value="null" th:selected="${sortByStatus == null}">Sort by Payment Status: Select</option>
-              <option value="pending" th:selected="${sortByStatus == 'pending'}">Sort by Payment Status: Pending</option>
-              <option value="completed" th:selected="${sortByStatus == 'completed'}">Sort by Payment Status: Completed</option>
-          </select>
+<div layout:fragment="content">
+  <section class="manage-bookings">
+    <h1>Manage Bookings</h1>
+    <div class="sort-options">
+      <label for="sortField">Sort Bookings</label>
+      <select name="sortField" id="sortField" onchange="updateSortOrderLabels(); submitSortForm()" aria-label="Select sorting field" aria-describedby="sortDescription">
+        <option value="none" th:selected="${sortByAmount == null and sortByStatus == null}">No Sorting</option>
+        <option value="amount" th:selected="${sortByAmount != null and sortByStatus == null}">Sort by Amount</option>
+        <option value="status" th:selected="${sortByStatus != null}">Sort by Payment Status</option>
+      </select>
+      <span id="sortDescription" class="sr-only">Select a field to sort bookings, then choose the order below.</span>
+      <div class="sort-order">
+        <input type="radio" name="sortOrder" id="orderNone" value="none" th:checked="${sortByAmount == null and sortByStatus == null}" onchange="submitSortForm()" />
+        <label for="orderNone" data-amount-label="None" data-status-label="None">None</label>
+        <input type="radio" name="sortOrder" id="orderAsc" value="asc" th:checked="${sortByAmount == 'asc' or sortByStatus == 'pending'}" onchange="submitSortForm()" />
+        <label for="orderAsc" data-amount-label="Ascending" data-status-label="Pending">Ascending</label>
+        <input type="radio" name="sortOrder" id="orderDesc" value="desc" th:checked="${sortByAmount == 'desc' or sortByStatus == 'completed'}" onchange="submitSortForm()" />
+        <label for="orderDesc" data-amount-label="Descending" data-status-label="Completed">Descending</label>
       </div>
-      <div th:each="booking : ${bookings}" class="booking-item">
-        <div class="booking-header" th:text="${booking.car.model}"></div>
-        <div class="booking-details">
-          <div class="user-photo">
-            <img th:src="${booking.customer.photo}" alt="User Photo" />
-          </div>
-          <div class="booking-info">
-            <p>Booked by: <span th:text="${booking.customer.username}"></span></p>
-            <p>Phone: <span th:text="${booking.customer.phno}"></span></p>
-            <p>Amount: <span th:text="${booking.amountDue}"></span></p>
-            <p>From: <span th:text="${booking.startDate}"></span></p>
-            <p>To: <span th:text="${booking.endDate}"></span></p>
-          </div>
-          <div class="car-photo">
-            <img th:src="${booking.car.imageUrl}" alt="Car Image" />
-          </div>
+    </div>
+    <div th:each="booking : ${bookings}" class="booking-item">
+      <div class="booking-header" th:text="${booking.car.model}"></div>
+      <div class="booking-details">
+        <div class="user-photo">
+          <img th:src="${booking.customer.photo}" th:attr="alt='Photo of ' + ${booking.customer.username}" aria-label="User Photo" />
         </div>
-        <div th:switch="${booking.paymentStatus}">
-          <div th:case="'PENDING'">
-            <div class="finish-payment-container">
-              <form th:action="@{/admin/payment/finish/{id}(id=${booking.id})}" method="post">
-                <input type="hidden" name="bookingId" th:value="${booking.id}" />
-                <button type="submit" class="finish-payment">Finish Payment</button>
-              </form>
-            </div>
-          </div>
-          <div th:case="'COMPLETED'">
-            <p class="completed-payment">Completed Payment</p>
-          </div>
+        <div class="booking-info">
+          <p>Booked by: <span th:text="${booking.customer.username}"></span></p>
+          <p>Phone: <span th:text="${booking.customer.phno}"></span></p>
+          <p>Amount: <span th:text="${booking.amountDue}"></span></p>
+          <p>From: <span th:text="${booking.startDate}"></span></p>
+          <p>To: <span th:text="${booking.endDate}"></span></p>
+        </div>
+        <div class="car-photo">
+          <img th:src="${booking.car.imageUrl}" th:attr="alt='Image of ' + ${booking.car.model}" aria-label="Car Image" />
         </div>
       </div>
-    </section>
-  </main>
-  <footer>
-    <p>&copy; 2025 Car Rental Service. All rights reserved.</p>
-  </footer>
+      <div th:switch="${booking.paymentStatus}">
+        <div th:case="'PENDING'">
+          <div class="finish-payment-container">
+            <form th:action="@{/admin/payment/finish/{id}(id=${booking.id})}" method="post">
+              <input type="hidden" name="bookingId" th:value="${booking.id}" />
+              <button type="submit" class="finish-payment" th:attr="aria-label='Finish payment for booking of ' + ${booking.car.model}">Finish Payment</button>
+            </form>
+          </div>
+        </div>
+        <div th:case="'COMPLETED'">
+          <p class="completed-payment">Completed Payment</p>
+        </div>
+      </div>
+    </div>
+  </section>
   <script>
-    function submitSortForm() {
-      var sortByAmount = document.getElementById('sortByAmount').value;
-      var sortByStatus = document.getElementById('sortByStatus').value;
-      window.location.href = '/admin/manageBookings?sortByAmount=' + sortByAmount + '&sortByStatus=' + sortByStatus;
+    function updateSortOrderLabels() {
+        const sortField = document.getElementById('sortField').value;
+        const labels = document.querySelectorAll('.sort-order label');
+        labels.forEach(label => {
+            const labelType = sortField === 'status' ? 'data-status-label' : 'data-amount-label';
+            label.textContent = label.getAttribute(labelType);
+        });
+
+        // Update radio values for status
+        const ascRadio = document.getElementById('orderAsc');
+        const descRadio = document.getElementById('orderDesc');
+        if (sortField === 'status') {
+            ascRadio.value = 'pending';
+            descRadio.value = 'completed';
+        } else {
+            ascRadio.value = 'asc';
+            descRadio.value = 'desc';
+        }
     }
+
+    function submitSortForm() {
+        const sortField = document.getElementById('sortField').value;
+        const sortOrder = document.querySelector('input[name="sortOrder"]:checked').value;
+        let sortByAmount = null;
+        let sortByStatus = null;
+
+        if (sortField === 'amount' && sortOrder !== 'none') {
+            sortByAmount = sortOrder;
+        } else if (sortField === 'status' && sortOrder !== 'none') {
+            sortByStatus = sortOrder; // 'pending' or 'completed'
+        }
+
+        const url = `/admin/manageBookings?sortByAmount=${sortByAmount || 'null'}&sortByStatus=${sortByStatus || 'null'}`;
+        window.location.href = url;
+    }
+
+    // Initialize sort order labels and selection on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const sortByAmount = [[${sortByAmount != null ? sortByAmount : 'null'}]];
+        const sortByStatus = [[${sortByStatus != null ? sortByStatus : 'null'}]];
+        const sortFieldSelect = document.getElementById('sortField');
+        const noneRadio = document.getElementById('orderNone');
+        const ascRadio = document.getElementById('orderAsc');
+        const descRadio = document.getElementById('orderDesc');
+
+        // Prioritize sortByStatus if non-null, otherwise use sortByAmount
+        if (sortByStatus !== 'null') {
+            sortFieldSelect.value = 'status';
+            ascRadio.value = 'pending';
+            descRadio.value = 'completed';
+            if (sortByStatus === 'pending') {
+                ascRadio.checked = true;
+            } else if (sortByStatus === 'completed') {
+                descRadio.checked = true;
+            }
+        } else if (sortByAmount !== 'null') {
+            sortFieldSelect.value = 'amount';
+            ascRadio.value = 'asc';
+            descRadio.value = 'desc';
+            if (sortByAmount === 'asc') {
+                ascRadio.checked = true;
+            } else if (sortByAmount === 'desc') {
+                descRadio.checked = true;
+            }
+        } else {
+            sortFieldSelect.value = 'none';
+            noneRadio.checked = true;
+        }
+
+        // Update labels after setting the correct field and order
+        updateSortOrderLabels();
+    });
   </script>
-</body>
+</div>
 </html>

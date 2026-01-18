@@ -3,6 +3,8 @@ package com.rental.demo.service;
 import com.rental.demo.exception.UserAlreadyExistsException;
 import com.rental.demo.exception.UserNotFoundException;
 import com.rental.demo.model.CarBooking;
+import com.rental.demo.model.CreateUserCmd;
+import com.rental.demo.model.Role;
 import com.rental.demo.model.User;
 import com.rental.demo.repository.CarBookingRepo;
 import com.rental.demo.repository.UserRepo;
@@ -15,98 +17,99 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserService {
-	
-	@Autowired
-    private UserRepo userRepo;
-	
-	@Autowired
-	private CarBookingRepo bookingRepo;
-	@Autowired
-    private PasswordEncoder passwordEncoder;
-	
-	@Autowired
-    private EmailService emailService;
-    
-    private static final String IMAGE_UPLOAD_DIR = "src/main/webapp/images/users/";
-    
-    public String saveImage(MultipartFile image) throws IOException {
-        if (image.isEmpty()) {
-            return null;
-        }
-        File directory = new File(IMAGE_UPLOAD_DIR);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-        String imageName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-        Path imagePath = Paths.get(IMAGE_UPLOAD_DIR + imageName);
-        Files.copy(image.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-        return "/images/users/" + imageName;
+
+    private final UserRepo userRepo;
+	private final CarBookingRepo bookingRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final EntityMapper entityMapper;
+
+    @Value("${app.images.dir}")
+    private String DIR;
+
+    public UserService(UserRepo userRepo, CarBookingRepo bookingRepo, PasswordEncoder passwordEncoder, EmailService emailService, EntityMapper entityMapper) {
+        this.userRepo = userRepo;
+        this.bookingRepo = bookingRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.entityMapper = entityMapper;
     }
 
-    public User registerUser(User user, MultipartFile photo) throws IOException {
-        String photoUrl = saveImage(photo);
-        user.setPhoto(photoUrl);
-        if (userRepo.findByUsername(user.getUsername()).isPresent()) {
+    public String saveImage(MultipartFile image) throws IOException {
+
+        if (image == null || image.isEmpty()) {
+            return "/images/users/default-profile.jpg";
+        }
+
+        Path uploadDir = Paths.get(DIR, "images", "users");
+        Files.createDirectories(uploadDir);
+
+        String fileName = System.currentTimeMillis() + "_" +
+                image.getOriginalFilename().replaceAll("\\s+", "");
+
+        Path filePath = uploadDir.resolve(fileName);
+
+        Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        return "/images/users/" + fileName;
+    }
+
+
+    public void registerUser(CreateUserCmd cmd, MultipartFile photo) throws IOException {
+        if (userRepo.findByUsername(cmd.username()).isPresent()) {
             throw new UserAlreadyExistsException("Username already taken.");
         }
-        if (userRepo.findByEmail(user.getEmail()).isPresent()) {
+        if (userRepo.findByEmail(cmd.email()).isPresent()) {
             throw new UserAlreadyExistsException("Email already in use.");
         }
-        if (userRepo.findByPhno(user.getPhno()).isPresent()) {
+        if (userRepo.findByPhno(cmd.phno()).isPresent()) {
             throw new UserAlreadyExistsException("Phone number already in use.");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setEnabled(true);
-        user.setRole("USER");
+        String photoUrl = saveImage(photo);
+        var user = new User();
+        user.setUsername(cmd.username());
+        user.setPassword(passwordEncoder.encode(cmd.password()));
+        user.setEmail(cmd.email());
+        user.setPhno(cmd.phno());
+        user.setRole(Role.ROLE_USER);
+        user.setDrivingLicenseNo(cmd.drivingLicenseNo());
+        user.setPhoto(photoUrl);
+
         emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
-        return userRepo.save(user);
+        userRepo.save(user);
     }
 
-    public User findByUsername(String username) {
+    public CreateUserCmd findByUsername(String username) {
         return userRepo.findByUsername(username)
+                .map(entityMapper::toCreateUserCmd)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
     }
 
-    public String savePhoto(MultipartFile photo) throws IOException {
-    	if (photo.isEmpty()) {
-    	    return null;
-    	}
+    public User updateUser(CreateUserCmd cmd, MultipartFile photo) throws IOException {
+        User existingUser = userRepo.findById(cmd.id())
+                .orElseThrow(() -> new UserNotFoundException("User not found with Id: " + cmd.id()));
 
-    	File directory = new File("src/main/webapp/images/users/");
-    	if (!directory.exists()) {
-    	    directory.mkdirs();
-    	}
-
-    	String filename = photo.getOriginalFilename();
-    	Path filePath = Paths.get(directory.getAbsolutePath(), filename);
-    	Files.copy(photo.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-    	return "/images/users/" + filename;
-
-    }
-
-    public User updateUser(User user, MultipartFile photo) throws IOException {
-        User existingUser = userRepo.findById(user.getId())
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + user.getId()));
-
-        existingUser.setUsername(user.getUsername());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPhno(user.getPhno());
-        existingUser.setRole(user.getRole());
-        existingUser.setDrivingLicenseNo(user.getDrivingLicenseNo());
+        existingUser.setUsername(cmd.username());
+        existingUser.setEmail(cmd.email());
+        existingUser.setPhno(cmd.phno());
+        existingUser.setRole(cmd.role());
+        existingUser.setDrivingLicenseNo(cmd.drivingLicenseNo());
 
         if (photo != null && !photo.isEmpty()) {
             String photoUrl = saveImage(photo);
             existingUser.setPhoto(photoUrl);
         }
-        emailService.sendUpdateEmail(user.getEmail(), user.getUsername());
+        emailService.sendUpdateEmail(existingUser.getEmail(), existingUser.getUsername());
         return userRepo.save(existingUser);
     }
 

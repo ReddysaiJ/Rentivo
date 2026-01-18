@@ -4,7 +4,7 @@ import com.rental.demo.model.User;
 import com.rental.demo.service.EmailService;
 import com.rental.demo.service.OtpService;
 import com.rental.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,30 +14,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@AllArgsConstructor
 @RequestMapping("/")
 public class HomeController {
 
-	@Autowired
 	UserService userService;
-
-	@Autowired
 	EmailService emailService;
-
-	@Autowired
 	OtpService otpService;
 
 	@GetMapping("/login")
-    public String login() {
-        return "login";
+    public String login(Authentication authentication) {
+        if(authentication != null)
+			return "redirect:/";
+		return "login";
     }
     
 	@GetMapping("/")
-	public String home(Authentication authentication) {
-	    if (authentication != null && authentication.getAuthorities().stream()
-	            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-	        return "adminhome";
-	    }
-	    return "userhome";
+	public String home() {
+	    return "home";
 	}
 
 	@GetMapping("/forgot-password")
@@ -89,5 +83,10 @@ public class HomeController {
 		}
 		userService.updatePassword(email, newPassword);
 		return "redirect:/login?message=Password+successfully+reset";
+	}
+
+	@GetMapping("/logout")
+	public String logout() {
+		return "redirect:/";
 	}
 }

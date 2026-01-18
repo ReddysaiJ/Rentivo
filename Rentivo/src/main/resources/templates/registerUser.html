@@ -1,112 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Registration</title>
+  <title>User Registration - Rentivo Car Rental</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+  <!-- Custom CSS for minimal overrides -->
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f7f7f7;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    form {
-      max-width: 500px;
-      margin: 0 auto;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    label {
-      font-size: 1rem;
-      margin-bottom: 8px;
-      display: block;
-    }
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .error-message {
-      color: red;
-      text-align: center;
-    }
-    #photoPreview {
-      text-align: center;
-      margin-top: 10px;
-    }
     #preview {
-      max-width: 200px;
-      max-height: 200px;
-      display: none;
+        max-width: 150px;
+        display: none;
     }
   </style>
-</head>
-<body>
-  <h2>User Registration</h2>
-  <form action="#" th:action="@{/user/register}" method="POST" enctype="multipart/form-data">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required />
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required />
+  <!-- Main Container -->
+  <div class="container">
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h2 class="text-center text-primary mb-4">User Registration</h2>
+            <form th:action="@{/user/register}" method="post" th:object="${user}" enctype="multipart/form-data">
+              <!-- Username -->
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" th:field="*{username}" class="form-control" id="username" required />
+                <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+              </div>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required />
+              <!-- Password -->
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" th:field="*{password}" class="form-control" id="password" required />
+                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                <div class="form-text text-muted" th:if="${error}">Please re-enter your password.</div>
+              </div>
 
-    <label for="phno">Phone Number:</label>
-    <input type="text" id="phno" name="phno" required />
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" th:field="*{email}" class="form-control" id="email" required />
+                <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+              </div>
 
-    <label for="userPhoto">Photo:</label>
-    <input type="file" id="userPhoto" name="userPhoto" required accept="image/*" onchange="previewImage(event)" />
+              <!-- Phone -->
+              <div class="mb-3">
+                <label for="phno" class="form-label">Phone Number</label>
+                <input type="text" th:field="*{phno}" class="form-control" id="phno" required />
+                <div class="text-danger" th:if="${#fields.hasErrors('phno')}" th:errors="*{phno}"></div>
+              </div>
 
-    <div id="photoPreview">
-      <img id="preview" src="" alt="Photo Preview" />
+              <!-- Driving License -->
+              <div class="mb-3">
+                <label for="drivingLicenseNo" class="form-label">Driving License Number</label>
+                <input type="text" th:field="*{drivingLicenseNo}" class="form-control" id="drivingLicenseNo" required />
+                <div class="text-danger" th:if="${#fields.hasErrors('drivingLicenseNo')}" th:errors="*{drivingLicenseNo}"></div>
+              </div>
+
+              <!-- Photo Upload -->
+              <div class="mb-3">
+                <label for="userPhoto" class="form-label">Upload Photo</label>
+                <input type="file" class="form-control" id="userPhoto" name="userPhoto" accept="image/*" onchange="previewImage(event)" required />
+                <div class="text-center mt-3">
+                  <img id="preview" src="" alt="Photo Preview" class="img-thumbnail" />
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-success">Register</button>
+              </div>
+
+              <!-- General Error -->
+              <div th:if="${error}" class="alert alert-danger mt-3" role="alert">
+                <span th:text="${error}"></span>
+              </div>
+            </form>
+
+            <div class="text-center mt-3">
+              <p>Already registered? <a th:href="@{/login}" class="text-primary">Login here</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <label for="drivingLicenseNo">Driving License Number:</label>
-    <input type="text" id="drivingLicenseNo" name="drivingLicenseNo" required />
-
-    <button type="submit">Register</button>
-
-    <div th:if="${error}" class="error-message">
-      <p th:text="${error}"></p>
-    </div>
-  </form>
+  <!-- JavaScript for image preview -->
   <script>
     function previewImage(event) {
-      const reader = new FileReader();
-      reader.onload = function () {
-        const preview = document.getElementById('preview');
-        preview.src = reader.result;
-        preview.style.display = 'block';
-      };
-      reader.readAsDataURL(event.target.files[0]);
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const preview = document.getElementById('preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
   </script>
+</div>
 </body>
 </html>
