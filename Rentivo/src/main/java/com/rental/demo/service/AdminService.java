@@ -5,12 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.rental.demo.model.*;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -20,11 +17,8 @@ import com.rental.demo.repository.CarBookingRepo;
 import com.rental.demo.repository.CarRepo;
 import com.rental.demo.repository.UserRepo;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 
 @Service
 public class AdminService {

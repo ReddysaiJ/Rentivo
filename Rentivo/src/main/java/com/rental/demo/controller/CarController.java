@@ -2,12 +2,10 @@ package com.rental.demo.controller;
 
 import com.rental.demo.model.CarDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.rental.demo.model.Car;
 import com.rental.demo.service.CarService;
 
 import java.time.LocalDate;
