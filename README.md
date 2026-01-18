@@ -1,142 +1,181 @@
 # Rentivo - Car Rental Management System
 
-## By Reddysai Jonnadula
+**Author:** Reddysai Jonnadula
+**Tech Stack:** Java, Spring Boot, MySQL, Thymeleaf, Spring Security, Docker
 
-## Project Overview
-Rentivo is a secure and scalable car rental platform built using Spring Boot. It enables efficient car bookings, user management, and offline payment verification. The system ensures data security with BCrypt encryption, role-based access control, and email notifications for user transactions.
+---
 
-## Scope
-### Purpose of the System
-The purpose of this system is to facilitate car rentals by allowing users to browse available cars, make bookings, and process payments while providing administrators with tools to manage cars, users, and bookings. The system enhances efficiency by automating rental processes, ensuring secure authentication, and maintaining accurate records of transactions. Additionally, it integrates security mechanisms to protect user data and provides an email notification system for booking confirmations and updates.
+## 📌 Project Overview
 
-### Included in the Scope
-- **User Management**: Registration, authentication, and profile updates.
-- **Car Management**: Adding, updating, and deleting car listings.
-- **Booking System**: Creating, modifying, and canceling bookings.
-- **Payment Handling**: Confirming offline payments.
-- **Admin Dashboard**: Managing users, bookings, and cars.
-- **Security Features**: BCrypt password hashing, Spring Security, and role-based access control.
-- **Email Notifications**: Automated emails for bookings, cancellations, and updates.
+Rentivo is a secure, scalable **Car Rental Management System** built using Spring Boot.
+It allows users to browse cars, make bookings, and manage their profiles, while administrators can manage cars, users, and bookings efficiently.
 
-### Outside the Scope
-- **Dynamic Pricing**: The system does not support automated price changes based on demand.
-- **Online Payment Integration**: Currently, payments are manually confirmed by admins.
-- **Mobile App**: The platform is web-based without a dedicated mobile application.
+The system ensures **data security**, **role-based access control**, **email notifications**, and offline payment verification.
 
-## Features
-- **User Authentication**: Secure login, registration, and password management using BCrypt.
-- **Car Management**: Admins can add, update, and remove cars with real-time availability.
-- **Booking & Payments**: Users can book cars, and offline payments are confirmed by the admin.
-- **Role-based Access Control**: Ensures secure admin and user functionalities.
-- **Email Notifications**: Automated emails for bookings, cancellations, and updates.
-- **Admin Dashboard**: Centralized control for managing users, bookings, and cars.
+---
 
-## Technology Stack
-- **Backend**: Java, Spring Boot, Hibernate (JPA)
-- **Frontend**: HTML, CSS, Thymeleaf
-- **Database**: MySQL
-- **Security**: BCrypt for password hashing, Spring Security
-- **Mailing Service**: Spring Boot Mail for automated emails
-- **Development & Deployment**: Maven, Git, IntelliJ IDEA/Eclipse
+## 🎯 Scope
 
-## Directory Structure
-```
-└── reddysaij-rentivo/
-    ├── README.md
-    └── Rentivo/
-        ├── mvnw
-        ├── mvnw.cmd
-        ├── pom.xml
-        ├── .gitattributes
-        ├── .gitignore
-        ├── src/
-        │   ├── main/
-        │   │   ├── java/com/rental/demo/
-        │   │   │   ├── RentivoApplication.java
-        │   │   │   ├── config/
-        │   │   │   │   ├── SecurityConfig.java
-        │   │   │   │   └── WebConfig.java
-        │   │   │   ├── controller/
-        │   │   │   │   ├── AdminController.java
-        │   │   │   │   ├── CarBookingController.java
-        │   │   │   │   ├── CarController.java
-        │   │   │   │   ├── HomeController.java
-        │   │   │   │   └── UserController.java
-        │   │   │   ├── exception/
-        │   │   │   │   ├── UserAlreadyExistsException.java
-        │   │   │   │   └── UserNotFoundException.java
-        │   │   │   ├── model/
-        │   │   │   │   ├── Car.java
-        │   │   │   │   ├── CarBooking.java
-        │   │   │   │   ├── User.java
-        │   │   │   │   └── UserDetailsImpl.java
-        │   │   │   ├── repository/
-        │   │   │   │   ├── CarBookingRepo.java
-        │   │   │   │   ├── CarRepo.java
-        │   │   │   │   └── UserRepo.java
-        │   │   │   ├── service/
-        │   │   │   │   ├── AdminService.java
-        │   │   │   │   ├── CarBookingService.java
-        │   │   │   │   ├── CarService.java
-        │   │   │   │   ├── EmailService.java
-        │   │   │   │   ├── UserDetailsServiceImpl.java
-        │   │   │   │   └── UserService.java
-        │   │   ├── resources/
-        │   │   │   ├── application.properties
-        │   │   │   ├── data.sql
-        │   │   │   ├── static/css/style.css
-        │   │   │   ├── templates/
-        │   │   │   │   ├── addCar.html
-        │   │   │   │   ├── adminDashboard.html
-        │   │   │   │   ├── manageBookings.html
-        │   │   │   │   ├── manageCars.html
-        │   │   │   │   ├── manageUsers.html
-        │   │   │   │   ├── my-bookings.html
-        │   │   │   │   ├── registerUser.html
-        │   │   │   │   ├── userHome.html
-        │   │   │   │   └── mail/
-        │   │   │   │       ├── booking.html
-        │   │   │   │       ├── bookingCancellation.html
-        │   │   │   │       ├── paymentFinished.html
-        │   │   │   │       ├── updated.html
-        │   │   │   │       └── welcome.html
-        │   │   └── webapp/images/
-        │   │       ├── cars/
-        │   │       └── users/
-        │   └── test/java/com/rental/demo/
-        │       └── RentivoApplicationTests.java
-        └── .mvn/wrapper/maven-wrapper.properties
-```
+### Purpose
 
-## Installation & Setup
+To automate car rentals by enabling secure user registration, booking management, and administrative control.
+
+### Included
+
+* User registration, login, and profile management
+* Role-based access (ADMIN / USER)
+* Car listing, availability, and management
+* Booking creation, modification, and cancellation
+* Offline payment confirmation
+* Email notifications for bookings, updates, and cancellations
+* Admin dashboard for managing users, cars, and bookings
+* File uploads (user profile photos, car images)
+* Flyway migration scripts for database version control
+
+### Excluded
+
+* Online payment gateway integration
+* Dynamic pricing
+* Dedicated mobile application
+
+---
+
+## ✨ Features
+
+### 👤 User Features
+
+* Register, login, and update profile
+* Upload profile photo
+* Browse available cars
+* Book cars and view recent bookings
+* Email notifications for bookings and updates
+
+### 🛠 Admin Features
+
+* Add, update, and remove cars with images
+* Manage users (add, update, delete)
+* View and manage bookings
+* Confirm offline payments
+* Dashboard with stats (total users, cars, bookings, available cars)
+
+### 🔐 Security
+
+* Spring Security
+* BCrypt password hashing
+* Role-based authorization (USER / ADMIN)
+
+---
+
+## 🧰 Technology Stack
+
+| Layer              | Technology              |
+| ------------------ | ----------------------- |
+| Backend            | Java, Spring Boot       |
+| ORM                | Hibernate (JPA)         |
+| Database           | MySQL                   |
+| Database Migration | Flyway                  |
+| Security           | Spring Security, BCrypt |
+| Frontend           | Thymeleaf, HTML, CSS    |
+| Email Service      | Spring Boot Mail        |
+| Build Tool         | Maven                   |
+| Containerization   | Docker, Docker Compose  |
+
+---
+
+## ⚙️ Installation & Setup
+
 ### Prerequisites
-- Java 17+
-- MySQL Database
-- Maven
 
-### Steps to Run
+* Java 17 or higher
+* MySQL 8.x
+* Maven
+* Docker & Docker Compose (for containerized setup)
+
+---
+
+## ▶️ How to Run the Application
+
+### 1️⃣ Run Locally
+
 1. Clone the repository:
-   ```sh
+
+   ```bash
    git clone https://github.com/ReddysaiJ/Rentivo.git
    ```
-2. Navigate to the project folder:
-   ```sh
-   cd rentivo
+2. Change directory:
+
+   ```bash
+   cd rentivo/Rentivo
    ```
-3. Configure the database in `application.properties`:
+3. Update database credentials in `src/main/resources/application.properties` (example):
+
    ```properties
    spring.datasource.url=jdbc:mysql://localhost:3306/rentivo
    spring.datasource.username=root
    spring.datasource.password=yourpassword
    ```
-4. Build and run the project:
-   ```sh
+4. Build & run:
+
+   ```bash
+   mvn clean package
    mvn spring-boot:run
    ```
-5. Open `http://localhost:8080` in a browser.
+5. Open the app:
 
-## Future Enhancements
-- **Online Payments**: Integrate payment gateways.
-- **Mobile App**: Develop an Android/iOS version.
-- **AI-based Recommendations**: Suggest cars based on user preferences.
+   ```
+   http://localhost:8080
+   ```
 
+---
+
+### 2️⃣ Run Using Docker
+
+1. Ensure Docker and Docker Compose are installed.
+2. From the project root (where `docker-compose.yml` exists), run:
+
+   ```bash
+   docker-compose up --build
+   ```
+3. Default application endpoint:
+
+   ```
+   http://localhost:8080
+   ```
+4. Persistent file uploads:
+
+   * `docker-compose.yml` mounts `./uploads` on the host to `/app/uploads` inside the container.
+   * Set `app.images.dir=/app/uploads` in `application-docker.properties` or pass as env var so the app reads/writes images to the mounted folder.
+
+---
+
+## 🗄 Database & Migrations
+
+* MySQL is the primary database.
+* Flyway is integrated for schema versioning and migrations.
+* Migration scripts are in:
+
+  ```
+  src/main/resources/db/migration
+  ```
+* If Flyway reports validation errors after changing migrations, either:
+
+  * Revert the half-applied changes from the DB and re-run migrations, or
+  * Use `flyway repair` (only after manual inspection and understanding).
+
+---
+
+
+## 🚀 Future Enhancements
+
+* Integrate online payment gateway
+* Dynamic pricing based on demand
+* Mobile application (Android/iOS)
+* Analytics & advanced reporting
+* CI/CD for automated Docker image builds and deployments
+
+---
+
+## 📌 Author
+
+**Reddysai Jonnadula**
+**Email:** [reddysai@gmail.com](mailto:reddysai2107@gmail.com)
